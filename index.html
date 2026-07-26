@@ -1,181 +1,352 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📞 Voice Group</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>📞 Голосовая связь</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            padding: 20px;
-            max-width: 800px;
+            font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            padding: 16px;
+        }
+        .container {
+            max-width: 700px;
             margin: 0 auto;
         }
+
+        /* ===== ХЕДЕР ===== */
         .header {
             background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
+            margin-bottom: 16px;
         }
-        .user-info { font-weight: 600; color: #333; }
-        .logout-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .status {
-            padding: 15px;
-            border-radius: 10px;
-            background: #e8f5e9;
-            margin: 15px 0;
-            font-weight: 500;
-        }
-        button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            margin: 5px;
-        }
-        button:hover:not(:disabled) { transform: scale(1.03); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-success { background: #34a853; color: white; }
-        .btn-danger { background: #ea4335; color: white; }
-        .flex { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        .online-users {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 10px 0;
-            min-height: 50px;
-        }
-        .user-badge {
-            background: #e8f0fe;
-            padding: 8px 15px;
-            border-radius: 20px;
+        .header-left {
             display: flex;
             align-items: center;
+            gap: 12px;
+        }
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #1a1a2e;
+        }
+        .user-status {
+            font-size: 13px;
+            color: #34a853;
+        }
+        .logout-btn {
+            background: #fee2e2;
+            border: none;
+            color: #dc2626;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .logout-btn:hover { background: #fecaca; }
+
+        /* ===== КАРТОЧКА ===== */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+        }
+        .card-sub {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        /* ===== ПОЛЬЗОВАТЕЛИ ===== */
+        .users-grid {
+            display: flex;
+            flex-direction: column;
             gap: 8px;
         }
-        .user-badge .status-dot {
+        .user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #f8f9fc;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .user-item:hover { background: #f0f2f7; }
+        .user-item .info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-item .dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
             display: inline-block;
         }
-        .user-badge .online { background: #34a853; }
-        .user-badge .offline { background: #ccc; }
+        .user-item .dot.online { background: #34a853; }
+        .user-item .dot.offline { background: #cbd5e1; }
+        .user-item .name {
+            font-weight: 500;
+            color: #1a1a2e;
+        }
+        .user-item .status-text {
+            font-size: 13px;
+            color: #94a3b8;
+        }
         .call-btn {
             background: #34a853;
-            color: white;
-            padding: 5px 15px;
             border: none;
-            border-radius: 15px;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
             cursor: pointer;
-            font-size: 12px;
+            transition: 0.2s;
         }
-        .call-btn:hover { opacity: 0.8; }
-        .incoming-call {
-            background: #fff3cd;
-            border: 2px solid #fbbc05;
-            padding: 15px;
+        .call-btn:hover { background: #2d9649; }
+        .call-btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+        .offline-label {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 0;
+            color: #94a3b8;
+        }
+        .empty-state .emoji { font-size: 40px; display: block; margin-bottom: 8px; }
+
+        /* ===== СТАТУС ЗВОНКА ===== */
+        .call-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+        .call-status.idle { background: #f1f5f9; color: #475569; }
+        .call-status.ringing { background: #fef9c3; color: #854d0e; }
+        .call-status.connected { background: #dcfce7; color: #166534; }
+        .call-status.error { background: #fee2e2; color: #991b1b; }
+        .call-status .icon { font-size: 22px; }
+
+        /* ===== КНОПКИ ЗВОНКА ===== */
+        .call-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover { transform: scale(1.02); }
+        .btn:active { transform: scale(0.97); }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-success { background: #34a853; color: white; }
+        .btn-success:hover { background: #2d9649; }
+        .btn-gray { background: #e2e8f0; color: #475569; }
+        .btn-gray:hover { background: #cbd5e1; }
+        .btn-hidden { display: none !important; }
+
+        /* ===== ВХОДЯЩИЙ ЗВОНОК ===== */
+        .incoming-box {
+            background: #fef9c3;
+            border: 2px solid #facc15;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .incoming-box .from {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .incoming-box .actions {
+            display: flex;
+            gap: 8px;
+        }
+        .incoming-box .actions .btn {
+            padding: 6px 18px;
+            font-size: 14px;
+        }
+
+        /* ===== АКТИВНЫЙ ЗВОНОК ===== */
+        .active-call {
+            background: #dcfce7;
+            border: 2px solid #34a853;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .active-call .label {
+            font-weight: 600;
+            color: #166534;
+        }
+
+        /* ===== ОТЛАДКА (свернуто) ===== */
+        .debug-toggle {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px 0;
+            margin-top: 8px;
+        }
+        .debug-toggle:hover { color: #475569; }
+        .debug-box {
+            background: #0f172a;
+            color: #a5f3fc;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 12px 16px;
             border-radius: 10px;
-            margin: 10px 0;
-        }
-        .hidden { display: none; }
-        .debug {
-            background: #263238;
-            color: #aed581;
-            padding: 10px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            margin: 10px 0;
+            margin-top: 8px;
             max-height: 150px;
             overflow-y: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
+            display: none;
+            line-height: 1.6;
         }
-        .online-count {
-            background: #e8f0fe;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            color: #333;
+        .debug-box.open { display: block; }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 500px) {
+            .header { flex-wrap: wrap; gap: 10px; }
+            .user-item { flex-wrap: wrap; gap: 8px; }
+            .call-actions { justify-content: center; }
+            .incoming-box { flex-direction: column; align-items: stretch; }
+            .incoming-box .actions { justify-content: center; }
+            .active-call { flex-direction: column; align-items: stretch; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div>
-        <span class="user-info">👤 <span id="usernameDisplay">Загрузка...</span></span>
-        <span style="margin-left:15px;font-size:14px;color:#888;" id="statusDisplay">🟢 Онлайн</span>
-        <span class="online-count" id="onlineCount">👥 0 онлайн</span>
-    </div>
-    <button class="logout-btn" onclick="window.logout()">🚪 Выйти</button>
-</div>
+<div class="container">
 
-<div class="card">
-    <h2>📞 Голосовые звонки</h2>
-    <p style="color:#666;margin:10px 0;">Выберите онлайн-пользователя для звонка</p>
-    <div class="online-users" id="usersList">
-        <p style="color:#999;">Загрузка пользователей...</p>
-    </div>
-</div>
-
-<div class="card">
-    <details>
-        <summary>🔍 Отладка</summary>
-        <div class="debug" id="debugLog">⏳ Ожидание...</div>
-    </details>
-</div>
-
-<div class="card" id="callStatusCard">
-    <div class="status" id="callStatus">📌 Готов к звонку</div>
-    
-    <div id="outgoingSection" class="hidden">
-        <div class="flex">
-            <button class="btn-danger" onclick="window.cancelCall()">❌ Отменить</button>
+    <!-- ===== ХЕДЕР ===== -->
+    <div class="header">
+        <div class="header-left">
+            <div class="avatar" id="avatarLetter">?</div>
+            <div>
+                <div class="user-name" id="usernameDisplay">Загрузка...</div>
+                <div class="user-status">🟢 Онлайн</div>
+            </div>
         </div>
-        <p style="margin-top:10px;color:#666;">⏳ Ожидание ответа...</p>
+        <button class="logout-btn" onclick="window.logout()">🚪 Выйти</button>
     </div>
 
-    <div id="incomingSection" class="hidden incoming-call">
-        <p><strong>📞 Входящий звонок от <span id="callerName">...</span></strong></p>
-        <div class="flex">
-            <button class="btn-success" onclick="window.acceptCall()">✅ Принять</button>
-            <button class="btn-danger" onclick="window.rejectCall()">❌ Отклонить</button>
+    <!-- ===== ПОЛЬЗОВАТЕЛИ ===== -->
+    <div class="card">
+        <div class="card-title">📞 Контакты</div>
+        <div class="card-sub">Нажмите «Позвонить» онлайн-пользователю</div>
+        <div class="users-grid" id="usersList">
+            <div class="empty-state">
+                <span class="emoji">⏳</span>
+                Загрузка пользователей...
+            </div>
         </div>
     </div>
 
-    <div id="activeCallSection" class="hidden">
-        <div class="flex">
-            <button class="btn-danger" onclick="window.hangup()">❌ Завершить звонок</button>
-            <span style="margin-left:10px;color:#34a853;">🔴 В эфире</span>
+    <!-- ===== УПРАВЛЕНИЕ ЗВОНКОМ ===== -->
+    <div class="card" id="callCard">
+        <div class="call-status idle" id="callStatus">
+            <span class="icon">📌</span>
+            <span>Готов к звонку</span>
+        </div>
+
+        <!-- Исходящий -->
+        <div id="outgoingSection" class="btn-hidden">
+            <div class="call-actions">
+                <button class="btn btn-danger" onclick="window.cancelCall()">❌ Отменить звонок</button>
+            </div>
+            <div style="margin-top:8px;color:#64748b;font-size:14px;">⏳ Ожидание ответа...</div>
+        </div>
+
+        <!-- Входящий -->
+        <div id="incomingSection" class="btn-hidden">
+            <div class="incoming-box">
+                <span>📞 Звонит <strong id="callerName">...</strong></span>
+                <div class="actions">
+                    <button class="btn btn-success" onclick="window.acceptCall()">✅ Принять</button>
+                    <button class="btn btn-danger" onclick="window.rejectCall()">❌ Отклонить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Активный -->
+        <div id="activeSection" class="btn-hidden">
+            <div class="active-call">
+                <span class="label">🔴 Идёт разговор</span>
+                <button class="btn btn-danger" onclick="window.hangup()">❌ Завершить</button>
+            </div>
         </div>
     </div>
+
+    <!-- ===== ОТЛАДКА ===== -->
+    <button class="debug-toggle" onclick="toggleDebug()">🔍 Показать отладку</button>
+    <div class="debug-box" id="debugBox">⏳ Ожидание...</div>
+
 </div>
 
 <script type="importmap">
@@ -187,42 +358,28 @@
 </script>
 
 <script type="module">
-// ======================================================
-//  ДЕБАГ
-// ======================================================
-const debugLog = document.getElementById('debugLog');
-function debug(msg) {
-    const time = new Date().toLocaleTimeString();
-    debugLog.textContent = `[${time}] ${msg}\n${debugLog.textContent}`;
-    console.log('[DEBUG]', msg);
-}
-debug('🚀 Приложение запускается...');
-
-// ======================================================
+// ============================================================
 //  ИМПОРТЫ
-// ======================================================
+// ============================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import { 
-    getFirestore, 
-    collection, 
-    query, 
-    where, 
-    getDocs, 
+import {
+    getFirestore,
+    collection,
+    getDocs,
     onSnapshot,
-    doc, 
-    setDoc, 
+    doc,
+    setDoc,
     deleteDoc,
     addDoc,
     updateDoc,
-    getDoc,
-    onSnapshot as onSnapshotFS
+    getDoc
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 import Peer from 'simple-peer';
 
-// ======================================================
+// ============================================================
 //  КОНФИГ
-// ======================================================
-const firebaseConfig = {
+// ============================================================
+const FIREBASE_CONFIG = {
     apiKey: "AIzaSyDCtMunMRiOWKSGh939BEU2TvhEgv_wB60",
     authDomain: "pulsar-galelium.firebaseapp.com",
     databaseURL: "https://pulsar-galelium-default-rtdb.firebaseio.com",
@@ -232,400 +389,360 @@ const firebaseConfig = {
     appId: "1:407132877855:web:fd29af874d74dcda90912a"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
-debug('🔥 Firestore инициализирован');
 
-// ======================================================
-//  ПЕРЕМЕННЫЕ
-// ======================================================
-let currentUser = null;
-let peer = null;
-let activeCallId = null;
-let isCalling = false;
-let isIncomingCall = false;
-let onlineUsers = {};
+// ============================================================
+//  ДЕБАГ
+// ============================================================
+const debugBox = document.getElementById('debugBox');
+function log(msg) {
+    const time = new Date().toLocaleTimeString();
+    debugBox.textContent = `[${time}] ${msg}\n${debugBox.textContent}`;
+    console.log('[LOG]', msg);
+}
+window.toggleDebug = () => {
+    debugBox.classList.toggle('open');
+};
 
-// ======================================================
+// ============================================================
 //  DOM
-// ======================================================
+// ============================================================
 const usernameDisplay = document.getElementById('usernameDisplay');
+const avatarLetter = document.getElementById('avatarLetter');
 const usersList = document.getElementById('usersList');
 const callStatus = document.getElementById('callStatus');
 const outgoingSection = document.getElementById('outgoingSection');
 const incomingSection = document.getElementById('incomingSection');
-const activeCallSection = document.getElementById('activeCallSection');
+const activeSection = document.getElementById('activeSection');
 const callerName = document.getElementById('callerName');
-const onlineCount = document.getElementById('onlineCount');
 
-// ======================================================
+// ============================================================
+//  СОСТОЯНИЕ
+// ============================================================
+let currentUser = null;
+let peer = null;
+let activeCallId = null;
+let isCalling = false;
+let isIncoming = false;
+let allUsers = [];
+let onlineUsers = {};
+
+// ============================================================
 //  ИНИЦИАЛИЗАЦИЯ
-// ======================================================
-function initApp() {
-    const userData = localStorage.getItem('currentUser');
-    if (!userData) {
-        window.location.href = 'login.html';
-        return;
-    }
+// ============================================================
+function init() {
+    log('🚀 Запуск...');
+    const data = localStorage.getItem('currentUser');
+    if (!data) { window.location.href = 'login.html'; return; }
 
     try {
-        currentUser = JSON.parse(userData);
+        currentUser = JSON.parse(data);
         usernameDisplay.textContent = currentUser.login;
-        debug(`✅ Пользователь: ${currentUser.login}`);
+        avatarLetter.textContent = currentUser.login[0].toUpperCase();
+        log(`✅ Пользователь: ${currentUser.login}`);
     } catch (e) {
         window.location.href = 'login.html';
         return;
     }
 
-    // Онлайн-статус
-    updateOnlineStatus(true);
-    
-    // Слушаем онлайн-пользователей
-    listenOnlineUsers();
-    
-    // Слушаем звонки
-    listenForCalls();
-    
-    // Загружаем пользователей
+    updateOnline(true);
+    listenOnline();
+    listenCalls();
     loadUsers();
-    
-    // Периодическое обновление статуса
-    setInterval(() => updateOnlineStatus(true), 15000);
-    
+
+    setInterval(() => updateOnline(true), 15000);
     window.addEventListener('beforeunload', () => {
-        updateOnlineStatus(false);
+        updateOnline(false);
         if (peer) peer.destroy();
     });
-    
-    debug('✅ Приложение готово');
-}
 
-// ======================================================
-//  ОНЛАЙН-СТАТУС
-// ======================================================
-async function updateOnlineStatus(online) {
+    log('✅ Готово');
+}
+init();
+
+// ============================================================
+//  ОНЛАЙН
+// ============================================================
+async function updateOnline(online) {
     if (!currentUser) return;
     try {
-        const statusRef = doc(db, 'onlineStatus', currentUser.login);
+        const ref = doc(db, 'onlineStatus', currentUser.login);
         if (online) {
-            await setDoc(statusRef, {
-                login: currentUser.login,
-                timestamp: Date.now()
-            });
+            await setDoc(ref, { login: currentUser.login, timestamp: Date.now() });
         } else {
-            await deleteDoc(statusRef);
+            await deleteDoc(ref);
         }
-    } catch (e) {
-        console.error('Status update error:', e);
-    }
+    } catch (e) { console.error(e); }
 }
 
-// ======================================================
-//  СЛУШАЕМ ОНЛАЙН-ПОЛЬЗОВАТЕЛЕЙ (REALTIME)
-// ======================================================
-function listenOnlineUsers() {
-    const statusRef = collection(db, 'onlineStatus');
-    
-    onSnapshot(statusRef, (snapshot) => {
+function listenOnline() {
+    onSnapshot(collection(db, 'onlineStatus'), (snap) => {
         onlineUsers = {};
-        snapshot.forEach(doc => {
-            const data = doc.data();
+        snap.forEach(d => {
+            const data = d.data();
             if (Date.now() - data.timestamp < 30000) {
                 onlineUsers[data.login] = data.timestamp;
             }
         });
-        debug(`🟢 Онлайн: ${Object.keys(onlineUsers).length} пользователей`);
-        updateOnlineCount();
+        log(`🟢 Онлайн: ${Object.keys(onlineUsers).length}`);
         renderUsers();
     });
 }
 
-function updateOnlineCount() {
-    const count = Object.keys(onlineUsers).length;
-    onlineCount.textContent = `👥 ${count} онлайн`;
-}
-
-// ======================================================
-//  ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ ИЗ FIRESTORE
-// ======================================================
+// ============================================================
+//  ПОЛЬЗОВАТЕЛИ
+// ============================================================
 async function loadUsers() {
     try {
-        const usersRef = collection(db, 'users');
-        const snapshot = await getDocs(usersRef);
-        const users = [];
-        snapshot.forEach(doc => {
-            users.push({ id: doc.id, ...doc.data() });
-        });
-        debug(`📋 Загружено ${users.length} пользователей`);
-        window.allUsers = users;
+        const snap = await getDocs(collection(db, 'users'));
+        allUsers = [];
+        snap.forEach(d => allUsers.push({ id: d.id, ...d.data() }));
+        log(`📋 Загружено ${allUsers.length} пользователей`);
         renderUsers();
-    } catch (error) {
-        debug(`❌ Ошибка загрузки: ${error.message}`);
-        usersList.innerHTML = `<p style="color:#e74c3c;">⚠️ Ошибка: ${error.message}</p>`;
+    } catch (e) {
+        log(`❌ Ошибка: ${e.message}`);
+        usersList.innerHTML = `<div class="empty-state"><span class="emoji">⚠️</span>Ошибка загрузки</div>`;
     }
 }
 
-// ======================================================
-//  ✅ ОТОБРАЖЕНИЕ ПОЛЬЗОВАТЕЛЕЙ
-// ======================================================
 function renderUsers() {
-    if (!window.allUsers) return;
-    
+    if (!allUsers.length) {
+        usersList.innerHTML = `<div class="empty-state"><span class="emoji">📭</span>Нет пользователей</div>`;
+        return;
+    }
+
     let html = '';
     let count = 0;
-    const currentLogin = currentUser.login;
-    
-    window.allUsers.forEach(user => {
-        if (user.login === currentLogin) return;
-        
-        const isOnline = onlineUsers[user.login] !== undefined;
+    const me = currentUser.login;
+
+    allUsers.forEach(u => {
+        if (u.login === me) return;
+        const isOnline = !!onlineUsers[u.login];
         count++;
-        
+
         html += `
-            <div class="user-badge">
-                <span class="status-dot ${isOnline ? 'online' : 'offline'}"></span>
-                ${user.login}
-                ${isOnline ? 
-                    `<button class="call-btn" onclick="window.startCall('${user.login}')">📞 Позвонить</button>` : 
-                    `<span style="font-size:12px;color:#999;">(offline)</span>`
+            <div class="user-item">
+                <div class="info">
+                    <span class="dot ${isOnline ? 'online' : 'offline'}"></span>
+                    <span class="name">${u.login}</span>
+                    <span class="status-text">${isOnline ? '🟢 онлайн' : '⚪ оффлайн'}</span>
+                </div>
+                ${isOnline
+                    ? `<button class="call-btn" onclick="window.startCall('${u.login}')">📞 Позвонить</button>`
+                    : `<span class="offline-label">недоступен</span>`
                 }
             </div>
         `;
     });
-    
+
     if (count === 0) {
-        html = '<p style="color:#999;">😴 Нет других пользователей</p>';
+        usersList.innerHTML = `<div class="empty-state"><span class="emoji">😴</span>Нет других пользователей</div>`;
+    } else {
+        usersList.innerHTML = html;
     }
-    
-    usersList.innerHTML = html;
-    debug(`🔄 Обновлен список: ${count} пользователей`);
+    log(`🔄 Список: ${count} пользователей`);
 }
 
-// ======================================================
-//  СЛУШАЕМ ЗВОНКИ
-// ======================================================
-function listenForCalls() {
-    const callsRef = collection(db, 'calls');
-    
-    onSnapshot(callsRef, async (snapshot) => {
-        snapshot.docChanges().forEach(async (change) => {
-            const callData = change.doc.data();
-            const callId = change.doc.id;
-            
+// ============================================================
+//  СТАТУС ЗВОНКА
+// ============================================================
+function setStatus(type, msg) {
+    const icons = { idle: '📌', ringing: '📞', connected: '✅', error: '❌' };
+    callStatus.className = `call-status ${type}`;
+    callStatus.innerHTML = `<span class="icon">${icons[type] || '📌'}</span><span>${msg}</span>`;
+}
+
+// ============================================================
+//  ЗВОНКИ
+// ============================================================
+function listenCalls() {
+    onSnapshot(collection(db, 'calls'), async (snap) => {
+        for (const change of snap.docChanges()) {
+            const data = change.doc.data();
+            const id = change.doc.id;
+
             if (change.type === 'added') {
-                // Новый звонок
-                if (callData.to === currentUser.login && 
-                    !callData.answered && 
-                    !callData.rejected) {
-                    debug(`📞 Входящий звонок от ${callData.from}`);
-                    showIncomingCall(callId, callData.from);
+                if (data.to === currentUser.login && !data.answered && !data.rejected) {
+                    log(`📞 Входящий от ${data.from}`);
+                    showIncoming(id, data.from);
                 }
             }
-            
+
             if (change.type === 'modified') {
-                // Ответ на звонок
-                if (callData.from === currentUser.login && 
-                    callData.answered && 
-                    peer) {
-                    debug(`✅ Звонок принят: ${callData.from} -> ${callData.to}`);
-                    await handleCallAccepted(callId, callData);
+                if (data.from === currentUser.login && data.answered && peer) {
+                    log(`✅ Ответ получен`);
+                    await handleAnswer(id, data);
                 }
             }
-        });
+        }
     });
 }
 
-// ======================================================
-//  ИСХОДЯЩИЙ ЗВОНОК
-// ======================================================
-window.startCall = async function(targetUser) {
-    if (isCalling) {
-        alert('У вас уже активный звонок');
-        return;
-    }
-    
-    debug(`📞 Звонок: ${targetUser}`);
+// ============================================================
+//  ИСХОДЯЩИЙ
+// ============================================================
+window.startCall = async function(target) {
+    if (isCalling) { alert('Уже есть звонок'); return; }
+
+    log(`📞 Звонок → ${target}`);
     isCalling = true;
-    callStatus.textContent = `📞 Звоним ${targetUser}...`;
-    callStatus.style.background = '#fff3cd';
-    outgoingSection.classList.remove('hidden');
-    
+    setStatus('ringing', `Звоним ${target}...`);
+    outgoingSection.classList.remove('btn-hidden');
+    incomingSection.classList.add('btn-hidden');
+    activeSection.classList.add('btn-hidden');
+
     try {
-        const callRef = await addDoc(collection(db, 'calls'), {
+        const ref = await addDoc(collection(db, 'calls'), {
             from: currentUser.login,
-            to: targetUser,
+            to: target,
             offer: null,
             answered: false,
             rejected: false,
             timestamp: Date.now()
         });
-        activeCallId = callRef.id;
-        
+        activeCallId = ref.id;
+
         const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
         peer = new Peer({ initiator: true, trickle: false, config });
-        
+
         peer.on('signal', async (data) => {
-            debug('📡 Сигнал отправлен');
-            await updateDoc(doc(db, 'calls', activeCallId), {
-                offer: JSON.stringify(data)
-            });
+            await updateDoc(doc(db, 'calls', activeCallId), { offer: JSON.stringify(data) });
         });
-        
+
         peer.on('connect', () => {
-            debug('✅ Соединение!');
-            callStatus.textContent = '✅ Соединение установлено! Говорите 🎤';
-            callStatus.style.background = '#c8e6c9';
-            outgoingSection.classList.add('hidden');
-            activeCallSection.classList.remove('hidden');
+            log('✅ Соединено!');
+            setStatus('connected', 'Соединение установлено! 🎤');
+            outgoingSection.classList.add('btn-hidden');
+            activeSection.classList.remove('btn-hidden');
         });
-        
+
         peer.on('error', (err) => {
-            debug(`❌ Ошибка: ${err.message}`);
+            log(`❌ Ошибка: ${err.message}`);
             window.cancelCall();
         });
-        
-    } catch (error) {
-        debug(`❌ Ошибка: ${error.message}`);
+
+    } catch (e) {
+        log(`❌ Ошибка: ${e.message}`);
         window.cancelCall();
     }
 };
 
-// ======================================================
-//  ВХОДЯЩИЙ ЗВОНОК
-// ======================================================
-function showIncomingCall(callId, fromUser) {
-    if (isCalling || isIncomingCall) {
-        updateDoc(doc(db, 'calls', callId), { rejected: true });
+// ============================================================
+//  ВХОДЯЩИЙ
+// ============================================================
+function showIncoming(id, from) {
+    if (isCalling || isIncoming) {
+        updateDoc(doc(db, 'calls', id), { rejected: true });
         return;
     }
-    
-    isIncomingCall = true;
-    activeCallId = callId;
-    callerName.textContent = fromUser;
-    incomingSection.classList.remove('hidden');
-    callStatus.textContent = `📞 Входящий звонок от ${fromUser}`;
-    callStatus.style.background = '#fff3cd';
+    isIncoming = true;
+    activeCallId = id;
+    callerName.textContent = from;
+    incomingSection.classList.remove('btn-hidden');
+    setStatus('ringing', `Входящий звонок от ${from}`);
 }
 
 window.acceptCall = async function() {
     if (!activeCallId) return;
-    
-    incomingSection.classList.add('hidden');
-    callStatus.textContent = '🔄 Подключение...';
-    callStatus.style.background = '#fff9c4';
-    
+    log('✅ Принял звонок');
+    incomingSection.classList.add('btn-hidden');
+    setStatus('ringing', 'Подключение...');
+
     try {
-        const callDoc = doc(db, 'calls', activeCallId);
-        const callSnap = await getDoc(callDoc);
-        const callData = callSnap.data();
-        
-        if (!callData || callData.rejected) {
-            throw new Error('Звонок отменен');
-        }
-        
+        const ref = doc(db, 'calls', activeCallId);
+        const snap = await getDoc(ref);
+        const data = snap.data();
+        if (!data || data.rejected) throw new Error('Звонок отменен');
+
         const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
         peer = new Peer({ initiator: false, trickle: false, config });
-        
-        peer.on('signal', async (data) => {
-            await updateDoc(callDoc, {
-                answer: JSON.stringify(data),
-                answered: true
-            });
+
+        peer.on('signal', async (s) => {
+            await updateDoc(ref, { answer: JSON.stringify(s), answered: true });
         });
-        
+
         peer.on('connect', () => {
-            debug('✅ Соединение!');
-            callStatus.textContent = '✅ Соединение установлено! Говорите 🎤';
-            callStatus.style.background = '#c8e6c9';
-            activeCallSection.classList.remove('hidden');
+            log('✅ Соединено!');
+            setStatus('connected', 'Соединение установлено! 🎤');
+            activeSection.classList.remove('btn-hidden');
             isCalling = true;
-            isIncomingCall = false;
+            isIncoming = false;
         });
-        
-        peer.signal(JSON.parse(callData.offer));
-        
-        await updateDoc(callDoc, { accepted: true });
-        
-    } catch (error) {
-        debug(`❌ Ошибка: ${error.message}`);
+
+        peer.signal(JSON.parse(data.offer));
+        await updateDoc(ref, { accepted: true });
+
+    } catch (e) {
+        log(`❌ Ошибка: ${e.message}`);
+        setStatus('error', 'Ошибка подключения');
         window.hangup();
     }
 };
 
 window.rejectCall = function() {
+    log('❌ Отклонил звонок');
     if (activeCallId) {
         updateDoc(doc(db, 'calls', activeCallId), { rejected: true });
     }
-    incomingSection.classList.add('hidden');
-    callStatus.textContent = '📌 Звонок отклонен';
-    callStatus.style.background = '#ffcdd2';
-    isIncomingCall = false;
+    incomingSection.classList.add('btn-hidden');
+    setStatus('idle', 'Звонок отклонен');
+    isIncoming = false;
     activeCallId = null;
 };
 
-// ======================================================
-//  ОБРАБОТКА ОТВЕТА
-// ======================================================
-async function handleCallAccepted(callId, callData) {
-    if (!callData.answer) return;
-    
+// ============================================================
+//  ОТВЕТ
+// ============================================================
+async function handleAnswer(id, data) {
+    if (!data.answer) return;
     try {
-        callStatus.textContent = '🔄 Подключение...';
-        callStatus.style.background = '#fff9c4';
-        peer.signal(JSON.parse(callData.answer));
-    } catch (error) {
-        debug(`❌ Ошибка: ${error.message}`);
+        setStatus('ringing', 'Подключение...');
+        peer.signal(JSON.parse(data.answer));
+    } catch (e) {
+        log(`❌ Ошибка: ${e.message}`);
         window.hangup();
     }
 }
 
-// ======================================================
+// ============================================================
 //  ЗАВЕРШЕНИЕ
-// ======================================================
+// ============================================================
 window.hangup = function() {
-    debug('📞 Завершение');
-    if (peer) {
-        peer.destroy();
-        peer = null;
-    }
-    
+    log('📞 Завершил');
+    if (peer) { peer.destroy(); peer = null; }
     if (activeCallId) {
-        deleteDoc(doc(db, 'calls', activeCallId));
+        deleteDoc(doc(db, 'calls', activeCallId)).catch(() => {});
     }
-    
     isCalling = false;
-    isIncomingCall = false;
+    isIncoming = false;
     activeCallId = null;
-    
-    outgoingSection.classList.add('hidden');
-    incomingSection.classList.add('hidden');
-    activeCallSection.classList.add('hidden');
-    callStatus.textContent = '📌 Звонок завершен';
-    callStatus.style.background = '#e8f5e9';
+    outgoingSection.classList.add('btn-hidden');
+    incomingSection.classList.add('btn-hidden');
+    activeSection.classList.add('btn-hidden');
+    setStatus('idle', 'Готов к звонку');
 };
 
 window.cancelCall = function() {
     if (activeCallId) {
-        updateDoc(doc(db, 'calls', activeCallId), { rejected: true });
+        updateDoc(doc(db, 'calls', activeCallId), { rejected: true }).catch(() => {});
     }
     window.hangup();
 };
 
-// ======================================================
+// ============================================================
 //  ВЫХОД
-// ======================================================
+// ============================================================
 window.logout = function() {
-    debug('🚪 Выход');
-    updateOnlineStatus(false);
+    log('🚪 Выход');
+    updateOnline(false);
     if (peer) peer.destroy();
     localStorage.removeItem('currentUser');
     window.location.href = 'login.html';
 };
 
-// ======================================================
-//  ЗАПУСК
-// ======================================================
-initApp();
+log('✅ Скрипт загружен');
 </script>
+
 </body>
 </html>
