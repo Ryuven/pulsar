@@ -1,435 +1,252 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔐 Вход / Регистрация</title>
+    <title>Вход в систему</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
         }
-        .auth-card {
+        .container {
             background: white;
             padding: 40px;
-            border-radius: 20px;
+            border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 400px;
+            width: 400px;
         }
-        h1 { 
-            text-align: center; 
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 28px;
-        }
-        .subtitle {
+        h2 {
             text-align: center;
-            color: #888;
+            color: #333;
             margin-bottom: 30px;
-            font-size: 14px;
         }
-        .tabs {
+        .tab {
             display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
         }
-        .tab-btn {
+        .tab button {
             flex: 1;
             padding: 10px;
             border: none;
-            border-radius: 10px;
+            background: none;
             font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
-            background: #f0f2f5;
             color: #666;
-            transition: 0.3s;
+            transition: all 0.3s;
         }
-        .tab-btn.active {
-            background: #667eea;
-            color: white;
+        .tab button.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
         }
-        .input-group {
-            margin-bottom: 20px;
+        .form {
+            display: none;
         }
-        label {
+        .form.active {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
         }
         input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-        input:focus {
-            border-color: #667eea;
-            outline: none;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
         }
         button[type="submit"] {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px;
+            background: #667eea;
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 600;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: background 0.3s;
         }
         button[type="submit"]:hover {
-            transform: scale(1.02);
-        }
-        button[type="submit"]:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+            background: #5a67d8;
         }
         .error {
-            color: #e74c3c;
-            background: #fde8e8;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: none;
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
             text-align: center;
         }
         .success {
-            color: #2e7d32;
-            background: #e8f5e9;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: none;
+            color: green;
+            font-size: 14px;
+            margin-top: 10px;
             text-align: center;
-        }
-        .spinner {
-            display: none;
-            text-align: center;
-            margin: 10px 0;
-        }
-        .spinner::after {
-            content: '';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .toggle-pwd {
-            position: relative;
-        }
-        .toggle-pwd button {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #888;
-            font-size: 18px;
         }
     </style>
 </head>
 <body>
-    <div class="auth-card">
-        <h1>🎧 Voice Group</h1>
-        <p class="subtitle">Войдите или создайте аккаунт</p>
-
-        <div class="tabs">
-            <button class="tab-btn active" id="loginTab">🔑 Вход</button>
-            <button class="tab-btn" id="registerTab">📝 Регистрация</button>
+    <div class="container">
+        <h2>🎤 Pulsar Galelium</h2>
+        <div class="tab">
+            <button class="active" onclick="switchTab('login')">Вход</button>
+            <button onclick="switchTab('register')">Регистрация</button>
         </div>
 
-        <!-- Форма входа -->
-        <form id="loginForm">
-            <div class="input-group">
-                <label>👤 Логин</label>
-                <input type="text" id="loginUsername" placeholder="Введите логин" required>
-            </div>
-            <div class="input-group toggle-pwd">
-                <label>🔑 Пароль</label>
-                <input type="password" id="loginPassword" placeholder="Введите пароль" required>
-                <button type="button" onclick="togglePassword('loginPassword')">👁️</button>
-            </div>
-            <button type="submit" id="loginBtn">🚀 Войти</button>
-            <div class="spinner" id="loginSpinner"></div>
-            <div class="error" id="loginError"></div>
-            <div class="success" id="loginSuccess"></div>
-        </form>
+        <div id="loginForm" class="form active">
+            <form id="login">
+                <input type="text" id="loginUsername" placeholder="Имя пользователя" required>
+                <input type="password" id="loginPassword" placeholder="Пароль" required>
+                <button type="submit">Войти</button>
+                <div id="loginMessage"></div>
+            </form>
+        </div>
 
-        <!-- Форма регистрации -->
-        <form id="registerForm" style="display:none;">
-            <div class="input-group">
-                <label>👤 Логин</label>
-                <input type="text" id="registerUsername" placeholder="Придумайте логин" required>
-            </div>
-            <div class="input-group toggle-pwd">
-                <label>🔑 Пароль</label>
-                <input type="password" id="registerPassword" placeholder="Придумайте пароль" required>
-                <button type="button" onclick="togglePassword('registerPassword')">👁️</button>
-            </div>
-            <button type="submit" id="registerBtn">📝 Создать аккаунт</button>
-            <div class="spinner" id="registerSpinner"></div>
-            <div class="error" id="registerError"></div>
-            <div class="success" id="registerSuccess"></div>
-        </form>
+        <div id="registerForm" class="form">
+            <form id="register">
+                <input type="text" id="regUsername" placeholder="Имя пользователя" required>
+                <input type="password" id="regPassword" placeholder="Пароль" required>
+                <input type="password" id="regConfirm" placeholder="Подтвердите пароль" required>
+                <button type="submit">Зарегистрироваться</button>
+                <div id="registerMessage"></div>
+            </form>
+        </div>
     </div>
 
-    <script type="importmap">
-    {
-        "imports": {
-            "simple-peer": "https://cdn.jsdelivr.net/npm/simple-peer@9.11.1/simplepeer.min.js"
-        }
-    }
-    </script>
-
     <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getDatabase, ref, set, onDisconnect } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
 
-    // ======================================================
-    //  КОНФИГ FIREBASE
-    // ======================================================
-    const firebaseConfig = {
-        apiKey: "AIzaSyDCtMunMRiOWKSGh939BEU2TvhEgv_wB60",
-        authDomain: "pulsar-galelium.firebaseapp.com",
-        databaseURL: "https://pulsar-galelium-default-rtdb.firebaseio.com",
-        projectId: "pulsar-galelium",
-        storageBucket: "pulsar-galelium.firebasestorage.app",
-        messagingSenderId: "407132877855",
-        appId: "1:407132877855:web:fd29af874d74dcda90912a"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCtMunMRiOWKSGh939BEU2TvhEgv_wB60",
+            authDomain: "pulsar-galelium.firebaseapp.com",
+            databaseURL: "https://pulsar-galelium-default-rtdb.firebaseio.com",
+            projectId: "pulsar-galelium",
+            storageBucket: "pulsar-galelium.firebasestorage.app",
+            messagingSenderId: "407132877855",
+            appId: "1:407132877855:web:fd29af874d74dcda90912a"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const rtdb = getDatabase(app);
 
-    // ======================================================
-    //  ЭЛЕМЕНТЫ
-    // ======================================================
-    const loginTab = document.getElementById('loginTab');
-    const registerTab = document.getElementById('registerTab');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
-    const loginSpinner = document.getElementById('loginSpinner');
-    const registerSpinner = document.getElementById('registerSpinner');
-    const loginError = document.getElementById('loginError');
-    const registerError = document.getElementById('registerError');
-    const loginSuccess = document.getElementById('loginSuccess');
-    const registerSuccess = document.getElementById('registerSuccess');
-
-    // ======================================================
-    //  ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
-    // ======================================================
-    loginTab.addEventListener('click', () => {
-        loginTab.classList.add('active');
-        registerTab.classList.remove('active');
-        loginForm.style.display = 'block';
-        registerForm.style.display = 'none';
-        hideErrors();
-    });
-
-    registerTab.addEventListener('click', () => {
-        registerTab.classList.add('active');
-        loginTab.classList.remove('active');
-        registerForm.style.display = 'block';
-        loginForm.style.display = 'none';
-        hideErrors();
-    });
-
-    function hideErrors() {
-        loginError.style.display = 'none';
-        registerError.style.display = 'none';
-        loginSuccess.style.display = 'none';
-        registerSuccess.style.display = 'none';
-    }
-
-    function showError(element, msg) {
-        element.textContent = '❌ ' + msg;
-        element.style.display = 'block';
-        setTimeout(() => element.style.display = 'none', 5000);
-    }
-
-    function showSuccess(element, msg) {
-        element.textContent = '✅ ' + msg;
-        element.style.display = 'block';
-        setTimeout(() => element.style.display = 'none', 3000);
-    }
-
-    // ======================================================
-    //  ТОГГЛ ПАРОЛЯ (глобально)
-    // ======================================================
-    window.togglePassword = function(id) {
-        const input = document.getElementById(id);
-        input.type = input.type === 'password' ? 'text' : 'password';
-    };
-
-    // ======================================================
-    //  ✅ РЕГИСТРАЦИЯ
-    // ======================================================
-    registerForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('registerUsername').value.trim();
-        const password = document.getElementById('registerPassword').value.trim();
-
-        if (!username || !password) {
-            showError(registerError, 'Заполните все поля');
-            return;
-        }
-
-        if (username.length < 3) {
-            showError(registerError, 'Логин должен быть минимум 3 символа');
-            return;
-        }
-
-        if (password.length < 3) {
-            showError(registerError, 'Пароль должен быть минимум 3 символа');
-            return;
-        }
-
-        registerBtn.disabled = true;
-        registerSpinner.style.display = 'block';
-        registerError.style.display = 'none';
-        registerSuccess.style.display = 'none';
-
-        try {
-            // Проверяем, существует ли пользователь
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('login', '==', username));
-            const snapshot = await getDocs(q);
-
-            if (!snapshot.empty) {
-                showError(registerError, 'Пользователь с таким логином уже существует');
-                registerBtn.disabled = false;
-                registerSpinner.style.display = 'none';
-                return;
-            }
-
-            // Создаем пользователя
-            await addDoc(collection(db, 'users'), {
-                login: username,
-                password: password,
-                createdAt: Date.now()
-            });
-
-            showSuccess(registerSuccess, 'Аккаунт создан! Теперь войдите');
-            registerForm.reset();
-
-            // Переключаем на вход
-            setTimeout(() => {
-                loginTab.click();
-            }, 1500);
-
-        } catch (error) {
-            console.error('Register error:', error);
-            showError(registerError, 'Ошибка: ' + error.message);
-        }
-
-        registerBtn.disabled = false;
-        registerSpinner.style.display = 'none';
-    });
-
-    // ======================================================
-    //  ✅ ВХОД
-    // ======================================================
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
-
-        if (!username || !password) {
-            showError(loginError, 'Заполните все поля');
-            return;
-        }
-
-        loginBtn.disabled = true;
-        loginSpinner.style.display = 'block';
-        loginError.style.display = 'none';
-        loginSuccess.style.display = 'none';
-
-        try {
-            // Ищем пользователя
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('login', '==', username));
-            const snapshot = await getDocs(q);
-
-            if (snapshot.empty) {
-                showError(loginError, 'Пользователь не найден');
-                loginBtn.disabled = false;
-                loginSpinner.style.display = 'none';
-                return;
-            }
-
-            let userFound = false;
-            snapshot.forEach(doc => {
-                const userData = doc.data();
-                if (userData.password === password) {
-                    userFound = true;
-                    // Сохраняем данные
-                    localStorage.setItem('currentUser', JSON.stringify({
-                        login: userData.login,
-                        uid: doc.id,
-                        timestamp: Date.now()
-                    }));
-                }
-            });
-
-            if (userFound) {
-                showSuccess(loginSuccess, 'Вход выполнен! Переход...');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('.tab button').forEach(b => b.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.add('active');
+                document.querySelector('.tab button:first-child').classList.add('active');
             } else {
-                showError(loginError, 'Неверный пароль');
+                document.getElementById('registerForm').classList.add('active');
+                document.querySelector('.tab button:last-child').classList.add('active');
+            }
+        };
+
+        // Регистрация
+        document.getElementById('register').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirm').value;
+            const msg = document.getElementById('registerMessage');
+
+            if (!username || !password) {
+                msg.textContent = 'Заполните все поля';
+                msg.className = 'error';
+                return;
             }
 
-        } catch (error) {
-            console.error('Login error:', error);
-            showError(loginError, 'Ошибка: ' + error.message);
-        }
+            if (password !== confirm) {
+                msg.textContent = 'Пароли не совпадают';
+                msg.className = 'error';
+                return;
+            }
 
-        loginBtn.disabled = false;
-        loginSpinner.style.display = 'none';
-    });
-
-    // ======================================================
-    //  АВТОВХОД
-    // ======================================================
-    (function checkAutoLogin() {
-        const userData = localStorage.getItem('currentUser');
-        if (userData) {
             try {
-                const user = JSON.parse(userData);
-                if (user.timestamp && Date.now() - user.timestamp < 3600000) {
-                    window.location.href = 'index.html';
-                } else {
-                    localStorage.removeItem('currentUser');
+                const userRef = doc(db, 'users', username);
+                const userSnap = await getDoc(userRef);
+                
+                if (userSnap.exists()) {
+                    msg.textContent = 'Пользователь уже существует';
+                    msg.className = 'error';
+                    return;
                 }
-            } catch (e) {
-                localStorage.removeItem('currentUser');
+
+                await setDoc(userRef, {
+                    password: password,
+                    createdAt: new Date().toISOString(),
+                    isOnline: false
+                });
+
+                msg.textContent = 'Регистрация успешна! Войдите в систему.';
+                msg.className = 'success';
+                
+                document.getElementById('regUsername').value = '';
+                document.getElementById('regPassword').value = '';
+                document.getElementById('regConfirm').value = '';
+                
+                setTimeout(() => window.switchTab('login'), 1500);
+            } catch (error) {
+                msg.textContent = 'Ошибка: ' + error.message;
+                msg.className = 'error';
             }
-        }
-    })();
+        });
+
+        // Вход
+        document.getElementById('login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const msg = document.getElementById('loginMessage');
+
+            if (!username || !password) {
+                msg.textContent = 'Заполните все поля';
+                msg.className = 'error';
+                return;
+            }
+
+            try {
+                const userRef = doc(db, 'users', username);
+                const userSnap = await getDoc(userRef);
+                
+                if (!userSnap.exists()) {
+                    msg.textContent = 'Пользователь не найден';
+                    msg.className = 'error';
+                    return;
+                }
+
+                const userData = userSnap.data();
+                if (userData.password !== password) {
+                    msg.textContent = 'Неверный пароль';
+                    msg.className = 'error';
+                    return;
+                }
+
+                // Сохраняем сессию
+                sessionStorage.setItem('currentUser', username);
+                
+                // Устанавливаем статус онлайн
+                const statusRef = ref(rtdb, `users/${username}/status`);
+                await set(statusRef, 'online');
+                await onDisconnect(statusRef, () => {
+                    set(statusRef, 'offline');
+                });
+
+                window.location.href = 'index.html';
+            } catch (error) {
+                msg.textContent = 'Ошибка: ' + error.message;
+                msg.className = 'error';
+            }
+        });
     </script>
 </body>
 </html>

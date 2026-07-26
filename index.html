@@ -2,747 +2,541 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>📞 Голосовая связь</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Голосовая связь</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: #eef2f7;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 16px;
+            padding: 20px;
         }
         .container {
-            max-width: 700px;
+            max-width: 1200px;
             margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-
-        /* ===== ХЕДЕР ===== */
         .header {
-            background: white;
-            border-radius: 16px;
-            padding: 16px 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
         }
-        .header-left {
+        .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
-        .avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 18px;
+        .user-info span {
+            font-weight: bold;
+            color: #333;
         }
-        .user-name {
-            font-weight: 600;
-            font-size: 16px;
-            color: #1a1a2e;
-        }
-        .user-status {
-            font-size: 13px;
-            color: #34a853;
-        }
-        .logout-btn {
-            background: #fee2e2;
-            border: none;
-            color: #dc2626;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .logout-btn:hover { background: #fecaca; }
-
-        /* ===== КАРТОЧКА ===== */
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            margin-bottom: 16px;
-        }
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 6px;
-        }
-        .card-sub {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 16px;
-        }
-
-        /* ===== ПОЛЬЗОВАТЕЛИ ===== */
-        .users-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .user-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: #f8f9fc;
-            border-radius: 12px;
-            transition: 0.2s;
-        }
-        .user-item:hover { background: #f0f2f7; }
-        .user-item .info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .user-item .dot {
+        .status-dot {
+            display: inline-block;
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            display: inline-block;
-        }
-        .user-item .dot.online { background: #34a853; }
-        .user-item .dot.offline { background: #cbd5e1; }
-        .user-item .name {
-            font-weight: 500;
-            color: #1a1a2e;
-        }
-        .user-item .status-text {
-            font-size: 13px;
-            color: #94a3b8;
-        }
-        .call-btn {
-            background: #34a853;
-            border: none;
-            color: white;
-            padding: 6px 18px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .call-btn:hover { background: #2d9649; }
-        .call-btn:disabled {
-            background: #cbd5e1;
-            cursor: not-allowed;
-        }
-        .offline-label {
-            font-size: 13px;
-            color: #94a3b8;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 30px 0;
-            color: #94a3b8;
-        }
-        .empty-state .emoji { font-size: 40px; display: block; margin-bottom: 8px; }
-
-        /* ===== СТАТУС ЗВОНКА ===== */
-        .call-status {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 18px;
-            border-radius: 12px;
-            font-weight: 500;
-            font-size: 15px;
-        }
-        .call-status.idle { background: #f1f5f9; color: #475569; }
-        .call-status.ringing { background: #fef9c3; color: #854d0e; }
-        .call-status.connected { background: #dcfce7; color: #166534; }
-        .call-status.error { background: #fee2e2; color: #991b1b; }
-        .call-status .icon { font-size: 22px; }
-
-        /* ===== КНОПКИ ЗВОНКА ===== */
-        .call-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 14px;
-            flex-wrap: wrap;
+            background: #4ade80;
+            margin-right: 5px;
         }
         .btn {
-            padding: 10px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 15px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn:hover { transform: scale(1.02); }
-        .btn:active { transform: scale(0.97); }
-        .btn-danger { background: #dc2626; color: white; }
-        .btn-danger:hover { background: #b91c1c; }
-        .btn-success { background: #34a853; color: white; }
-        .btn-success:hover { background: #2d9649; }
-        .btn-gray { background: #e2e8f0; color: #475569; }
-        .btn-gray:hover { background: #cbd5e1; }
-        .btn-hidden { display: none !important; }
-
-        /* ===== ВХОДЯЩИЙ ЗВОНОК ===== */
-        .incoming-box {
-            background: #fef9c3;
-            border: 2px solid #facc15;
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .incoming-box .from {
-            font-weight: 600;
-            font-size: 16px;
-        }
-        .incoming-box .actions {
-            display: flex;
-            gap: 8px;
-        }
-        .incoming-box .actions .btn {
-            padding: 6px 18px;
             font-size: 14px;
+            transition: all 0.3s;
         }
-
-        /* ===== АКТИВНЫЙ ЗВОНОК ===== */
-        .active-call {
-            background: #dcfce7;
-            border: 2px solid #34a853;
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
+        .btn-danger {
+            background: #ef4444;
+            color: white;
         }
-        .active-call .label {
-            font-weight: 600;
-            color: #166534;
+        .btn-danger:hover {
+            background: #dc2626;
         }
-
-        /* ===== ОТЛАДКА (свернуто) ===== */
-        .debug-toggle {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 13px;
-            cursor: pointer;
-            padding: 4px 0;
-            margin-top: 8px;
+        .btn-call {
+            background: #22c55e;
+            color: white;
+            padding: 8px 15px;
         }
-        .debug-toggle:hover { color: #475569; }
-        .debug-box {
-            background: #0f172a;
-            color: #a5f3fc;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            padding: 12px 16px;
+        .btn-call:hover {
+            background: #16a34a;
+        }
+        .btn-call.active {
+            background: #ef4444;
+        }
+        .btn-call.active:hover {
+            background: #dc2626;
+        }
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .user-card {
+            background: #f8fafc;
+            padding: 20px;
             border-radius: 10px;
-            margin-top: 8px;
-            max-height: 150px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            display: none;
-            line-height: 1.6;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
         }
-        .debug-box.open { display: block; }
-
-        /* ===== АДАПТИВ ===== */
-        @media (max-width: 500px) {
-            .header { flex-wrap: wrap; gap: 10px; }
-            .user-item { flex-wrap: wrap; gap: 8px; }
-            .call-actions { justify-content: center; }
-            .incoming-box { flex-direction: column; align-items: stretch; }
-            .incoming-box .actions { justify-content: center; }
-            .active-call { flex-direction: column; align-items: stretch; text-align: center; }
+        .user-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .user-card .username {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .user-card .status {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .user-card .status.online {
+            color: #22c55e;
+        }
+        .user-card .status.offline {
+            color: #94a3b8;
+        }
+        .call-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .mic-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #94a3b8;
+            transition: all 0.3s;
+        }
+        .mic-indicator.active {
+            background: #22c55e;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .call-status {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f1f5f9;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #475569;
+            text-align: center;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .microphone-permission {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #92400e;
+        }
+        .microphone-permission button {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .microphone-permission button:hover {
+            background: #d97706;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-
-    <!-- ===== ХЕДЕР ===== -->
-    <div class="header">
-        <div class="header-left">
-            <div class="avatar" id="avatarLetter">?</div>
-            <div>
-                <div class="user-name" id="usernameDisplay">Загрузка...</div>
-                <div class="user-status">🟢 Онлайн</div>
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <span>👤 <span id="currentUser">Загрузка...</span></span>
+                <span><span class="status-dot"></span> Онлайн</span>
             </div>
+            <button class="btn btn-danger" onclick="logout()">Выйти</button>
         </div>
-        <button class="logout-btn" onclick="window.logout()">🚪 Выйти</button>
-    </div>
 
-    <!-- ===== ПОЛЬЗОВАТЕЛИ ===== -->
-    <div class="card">
-        <div class="card-title">📞 Контакты</div>
-        <div class="card-sub">Нажмите «Позвонить» онлайн-пользователю</div>
-        <div class="users-grid" id="usersList">
-            <div class="empty-state">
-                <span class="emoji">⏳</span>
-                Загрузка пользователей...
-            </div>
+        <div id="micPermission" class="microphone-permission" style="display:none;">
+            <strong>⚠️ Требуется доступ к микрофону</strong>
+            <p>Для голосовой связи необходимо разрешить использование микрофона.</p>
+            <button onclick="requestMicrophone()">Разрешить микрофон</button>
+        </div>
+
+        <div id="usersContainer">
+            <h3 style="margin-bottom: 20px;">👥 Пользователи онлайн</h3>
+            <div id="usersList" class="users-grid"></div>
         </div>
     </div>
 
-    <!-- ===== УПРАВЛЕНИЕ ЗВОНКОМ ===== -->
-    <div class="card" id="callCard">
-        <div class="call-status idle" id="callStatus">
-            <span class="icon">📌</span>
-            <span>Готов к звонку</span>
-        </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getDatabase, ref, onValue, set, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
 
-        <!-- Исходящий -->
-        <div id="outgoingSection" class="btn-hidden">
-            <div class="call-actions">
-                <button class="btn btn-danger" onclick="window.cancelCall()">❌ Отменить звонок</button>
-            </div>
-            <div style="margin-top:8px;color:#64748b;font-size:14px;">⏳ Ожидание ответа...</div>
-        </div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCtMunMRiOWKSGh939BEU2TvhEgv_wB60",
+            authDomain: "pulsar-galelium.firebaseapp.com",
+            databaseURL: "https://pulsar-galelium-default-rtdb.firebaseio.com",
+            projectId: "pulsar-galelium",
+            storageBucket: "pulsar-galelium.firebasestorage.app",
+            messagingSenderId: "407132877855",
+            appId: "1:407132877855:web:fd29af874d74dcda90912a"
+        };
 
-        <!-- Входящий -->
-        <div id="incomingSection" class="btn-hidden">
-            <div class="incoming-box">
-                <span>📞 Звонит <strong id="callerName">...</strong></span>
-                <div class="actions">
-                    <button class="btn btn-success" onclick="window.acceptCall()">✅ Принять</button>
-                    <button class="btn btn-danger" onclick="window.rejectCall()">❌ Отклонить</button>
-                </div>
-            </div>
-        </div>
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const rtdb = getDatabase(app);
 
-        <!-- Активный -->
-        <div id="activeSection" class="btn-hidden">
-            <div class="active-call">
-                <span class="label">🔴 Идёт разговор</span>
-                <button class="btn btn-danger" onclick="window.hangup()">❌ Завершить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== ОТЛАДКА ===== -->
-    <button class="debug-toggle" onclick="toggleDebug()">🔍 Показать отладку</button>
-    <div class="debug-box" id="debugBox">⏳ Ожидание...</div>
-
-</div>
-
-<script type="importmap">
-{
-    "imports": {
-        "simple-peer": "https://cdn.jsdelivr.net/npm/simple-peer@9.11.1/simplepeer.min.js"
-    }
-}
-</script>
-
-<script type="module">
-// ============================================================
-//  ИМПОРТЫ
-// ============================================================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import {
-    getFirestore,
-    collection,
-    getDocs,
-    onSnapshot,
-    doc,
-    setDoc,
-    deleteDoc,
-    addDoc,
-    updateDoc,
-    getDoc
-} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-import Peer from 'simple-peer';
-
-// ============================================================
-//  КОНФИГ
-// ============================================================
-const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyDCtMunMRiOWKSGh939BEU2TvhEgv_wB60",
-    authDomain: "pulsar-galelium.firebaseapp.com",
-    databaseURL: "https://pulsar-galelium-default-rtdb.firebaseio.com",
-    projectId: "pulsar-galelium",
-    storageBucket: "pulsar-galelium.firebasestorage.app",
-    messagingSenderId: "407132877855",
-    appId: "1:407132877855:web:fd29af874d74dcda90912a"
-};
-
-const app = initializeApp(FIREBASE_CONFIG);
-const db = getFirestore(app);
-
-// ============================================================
-//  ДЕБАГ
-// ============================================================
-const debugBox = document.getElementById('debugBox');
-function log(msg) {
-    const time = new Date().toLocaleTimeString();
-    debugBox.textContent = `[${time}] ${msg}\n${debugBox.textContent}`;
-    console.log('[LOG]', msg);
-}
-window.toggleDebug = () => {
-    debugBox.classList.toggle('open');
-};
-
-// ============================================================
-//  DOM
-// ============================================================
-const usernameDisplay = document.getElementById('usernameDisplay');
-const avatarLetter = document.getElementById('avatarLetter');
-const usersList = document.getElementById('usersList');
-const callStatus = document.getElementById('callStatus');
-const outgoingSection = document.getElementById('outgoingSection');
-const incomingSection = document.getElementById('incomingSection');
-const activeSection = document.getElementById('activeSection');
-const callerName = document.getElementById('callerName');
-
-// ============================================================
-//  СОСТОЯНИЕ
-// ============================================================
-let currentUser = null;
-let peer = null;
-let activeCallId = null;
-let isCalling = false;
-let isIncoming = false;
-let allUsers = [];
-let onlineUsers = {};
-
-// ============================================================
-//  ИНИЦИАЛИЗАЦИЯ
-// ============================================================
-function init() {
-    log('🚀 Запуск...');
-    const data = localStorage.getItem('currentUser');
-    if (!data) { window.location.href = 'login.html'; return; }
-
-    try {
-        currentUser = JSON.parse(data);
-        usernameDisplay.textContent = currentUser.login;
-        avatarLetter.textContent = currentUser.login[0].toUpperCase();
-        log(`✅ Пользователь: ${currentUser.login}`);
-    } catch (e) {
-        window.location.href = 'login.html';
-        return;
-    }
-
-    updateOnline(true);
-    listenOnline();
-    listenCalls();
-    loadUsers();
-
-    setInterval(() => updateOnline(true), 15000);
-    window.addEventListener('beforeunload', () => {
-        updateOnline(false);
-        if (peer) peer.destroy();
-    });
-
-    log('✅ Готово');
-}
-init();
-
-// ============================================================
-//  ОНЛАЙН
-// ============================================================
-async function updateOnline(online) {
-    if (!currentUser) return;
-    try {
-        const ref = doc(db, 'onlineStatus', currentUser.login);
-        if (online) {
-            await setDoc(ref, { login: currentUser.login, timestamp: Date.now() });
-        } else {
-            await deleteDoc(ref);
+        let currentUser = sessionStorage.getItem('currentUser');
+        if (!currentUser) {
+            window.location.href = 'login.html';
         }
-    } catch (e) { console.error(e); }
-}
 
-function listenOnline() {
-    onSnapshot(collection(db, 'onlineStatus'), (snap) => {
-        onlineUsers = {};
-        snap.forEach(d => {
-            const data = d.data();
-            if (Date.now() - data.timestamp < 30000) {
-                onlineUsers[data.login] = data.timestamp;
+        document.getElementById('currentUser').textContent = currentUser;
+
+        // Проверка разрешения микрофона
+        let micPermission = false;
+        let localStream = null;
+        let peerConnections = {};
+        let audioContext = null;
+        let gainNode = null;
+
+        // Проверяем разрешение микрофона
+        navigator.permissions.query({ name: 'microphone' }).then(result => {
+            if (result.state === 'denied') {
+                document.getElementById('micPermission').style.display = 'block';
+            } else if (result.state === 'granted') {
+                initMicrophone();
             }
         });
-        log(`🟢 Онлайн: ${Object.keys(onlineUsers).length}`);
-        renderUsers();
-    });
-}
 
-// ============================================================
-//  ПОЛЬЗОВАТЕЛИ
-// ============================================================
-async function loadUsers() {
-    try {
-        const snap = await getDocs(collection(db, 'users'));
-        allUsers = [];
-        snap.forEach(d => allUsers.push({ id: d.id, ...d.data() }));
-        log(`📋 Загружено ${allUsers.length} пользователей`);
-        renderUsers();
-    } catch (e) {
-        log(`❌ Ошибка: ${e.message}`);
-        usersList.innerHTML = `<div class="empty-state"><span class="emoji">⚠️</span>Ошибка загрузки</div>`;
-    }
-}
+        window.requestMicrophone = function() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    document.getElementById('micPermission').style.display = 'none';
+                    micPermission = true;
+                    localStream = stream;
+                    
+                    // Создаем аудио контекст для обработки
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    gainNode = audioContext.createGain();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    source.connect(gainNode);
+                    
+                    updateAllCalls();
+                })
+                .catch(err => {
+                    alert('Не удалось получить доступ к микрофону: ' + err.message);
+                });
+        };
 
-function renderUsers() {
-    if (!allUsers.length) {
-        usersList.innerHTML = `<div class="empty-state"><span class="emoji">📭</span>Нет пользователей</div>`;
-        return;
-    }
-
-    let html = '';
-    let count = 0;
-    const me = currentUser.login;
-
-    allUsers.forEach(u => {
-        if (u.login === me) return;
-        const isOnline = !!onlineUsers[u.login];
-        count++;
-
-        html += `
-            <div class="user-item">
-                <div class="info">
-                    <span class="dot ${isOnline ? 'online' : 'offline'}"></span>
-                    <span class="name">${u.login}</span>
-                    <span class="status-text">${isOnline ? '🟢 онлайн' : '⚪ оффлайн'}</span>
-                </div>
-                ${isOnline
-                    ? `<button class="call-btn" onclick="window.startCall('${u.login}')">📞 Позвонить</button>`
-                    : `<span class="offline-label">недоступен</span>`
-                }
-            </div>
-        `;
-    });
-
-    if (count === 0) {
-        usersList.innerHTML = `<div class="empty-state"><span class="emoji">😴</span>Нет других пользователей</div>`;
-    } else {
-        usersList.innerHTML = html;
-    }
-    log(`🔄 Список: ${count} пользователей`);
-}
-
-// ============================================================
-//  СТАТУС ЗВОНКА
-// ============================================================
-function setStatus(type, msg) {
-    const icons = { idle: '📌', ringing: '📞', connected: '✅', error: '❌' };
-    callStatus.className = `call-status ${type}`;
-    callStatus.innerHTML = `<span class="icon">${icons[type] || '📌'}</span><span>${msg}</span>`;
-}
-
-// ============================================================
-//  ЗВОНКИ
-// ============================================================
-function listenCalls() {
-    onSnapshot(collection(db, 'calls'), async (snap) => {
-        for (const change of snap.docChanges()) {
-            const data = change.doc.data();
-            const id = change.doc.id;
-
-            if (change.type === 'added') {
-                if (data.to === currentUser.login && !data.answered && !data.rejected) {
-                    log(`📞 Входящий от ${data.from}`);
-                    showIncoming(id, data.from);
-                }
-            }
-
-            if (change.type === 'modified') {
-                if (data.from === currentUser.login && data.answered && peer) {
-                    log(`✅ Ответ получен`);
-                    await handleAnswer(id, data);
-                }
-            }
+        function initMicrophone() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    micPermission = true;
+                    localStream = stream;
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    gainNode = audioContext.createGain();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    source.connect(gainNode);
+                })
+                .catch(() => {
+                    document.getElementById('micPermission').style.display = 'block';
+                });
         }
-    });
-}
 
-// ============================================================
-//  ИСХОДЯЩИЙ
-// ============================================================
-window.startCall = async function(target) {
-    if (isCalling) { alert('Уже есть звонок'); return; }
+        // Получение списка пользователей
+        const usersRef = collection(db, 'users');
+        let usersList = {};
 
-    log(`📞 Звонок → ${target}`);
-    isCalling = true;
-    setStatus('ringing', `Звоним ${target}...`);
-    outgoingSection.classList.remove('btn-hidden');
-    incomingSection.classList.add('btn-hidden');
-    activeSection.classList.add('btn-hidden');
-
-    try {
-        const ref = await addDoc(collection(db, 'calls'), {
-            from: currentUser.login,
-            to: target,
-            offer: null,
-            answered: false,
-            rejected: false,
-            timestamp: Date.now()
-        });
-        activeCallId = ref.id;
-
-        const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-        peer = new Peer({ initiator: true, trickle: false, config });
-
-        peer.on('signal', async (data) => {
-            await updateDoc(doc(db, 'calls', activeCallId), { offer: JSON.stringify(data) });
+        onSnapshot(usersRef, (snapshot) => {
+            usersList = {};
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (doc.id !== currentUser) {
+                    usersList[doc.id] = { ...data, uid: doc.id };
+                }
+            });
+            renderUsers();
         });
 
-        peer.on('connect', () => {
-            log('✅ Соединено!');
-            setStatus('connected', 'Соединение установлено! 🎤');
-            outgoingSection.classList.add('btn-hidden');
-            activeSection.classList.remove('btn-hidden');
+        // Статусы пользователей из Realtime Database
+        onValue(ref(rtdb, 'users'), (snapshot) => {
+            const data = snapshot.val() || {};
+            renderUsers(data);
         });
 
-        peer.on('error', (err) => {
-            log(`❌ Ошибка: ${err.message}`);
-            window.cancelCall();
+        function renderUsers(statuses = {}) {
+            const container = document.getElementById('usersList');
+            
+            const onlineUsers = Object.keys(usersList).filter(uid => {
+                return statuses[uid]?.status === 'online';
+            });
+
+            const offlineUsers = Object.keys(usersList).filter(uid => {
+                return statuses[uid]?.status !== 'online';
+            });
+
+            if (Object.keys(usersList).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <h3>👋 Пользователей пока нет</h3>
+                        <p>Пригласите друзей!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            
+            // Сначала онлайн пользователи
+            onlineUsers.forEach(uid => {
+                html += createUserCard(uid, true, statuses[uid]);
+            });
+            
+            // Потом оффлайн
+            offlineUsers.forEach(uid => {
+                html += createUserCard(uid, false, statuses[uid]);
+            });
+
+            container.innerHTML = html;
+            updateAllCalls();
+        }
+
+        function createUserCard(uid, isOnline, statusData) {
+            const isCalling = statusData?.calling === currentUser;
+            const callStatus = statusData?.callStatus || '';
+            
+            return `
+                <div class="user-card" id="card-${uid}">
+                    <div class="username">${uid}</div>
+                    <div class="status ${isOnline ? 'online' : 'offline'}">
+                        ${isOnline ? '🟢 Онлайн' : '🔴 Офлайн'}
+                    </div>
+                    ${isOnline ? `
+                        <div class="call-controls">
+                            <button class="btn btn-call ${isCalling ? 'active' : ''}" 
+                                    onclick="toggleCall('${uid}')">
+                                ${isCalling ? '🔴 Завершить' : '📞 Позвонить'}
+                            </button>
+                            <span class="mic-indicator ${micPermission ? 'active' : ''}" 
+                                  title="${micPermission ? 'Микрофон активен' : 'Микрофон отключен'}"></span>
+                        </div>
+                        ${callStatus ? `<div class="call-status">${callStatus}</div>` : ''}
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Глобальные функции для вызова
+        window.toggleCall = function(targetUser) {
+            if (!micPermission) {
+                alert('Пожалуйста, разрешите доступ к микрофону');
+                window.requestMicrophone();
+                return;
+            }
+
+            const callRef = ref(rtdb, `users/${targetUser}`);
+            onValue(callRef, (snapshot) => {
+                const data = snapshot.val() || {};
+                const currentCallStatus = data.calling === currentUser;
+                
+                if (currentCallStatus) {
+                    // Завершаем звонок
+                    remove(ref(rtdb, `users/${targetUser}/calling`));
+                    remove(ref(rtdb, `users/${targetUser}/callStatus`));
+                    closePeerConnection(targetUser);
+                } else {
+                    // Начинаем звонок
+                    set(callRef, {
+                        ...data,
+                        calling: currentUser,
+                        callStatus: 'Входящий звонок...'
+                    });
+                    createPeerConnection(targetUser);
+                }
+            }, { onlyOnce: true });
+        };
+
+        // Слушаем входящие звонки
+        const myStatusRef = ref(rtdb, `users/${currentUser}`);
+        onValue(myStatusRef, (snapshot) => {
+            const data = snapshot.val() || {};
+            if (data.calling && data.calling !== currentUser) {
+                // Принимаем звонок автоматически
+                const caller = data.calling;
+                if (micPermission) {
+                    set(ref(rtdb, `users/${caller}/callStatus`), 'Соединение установлено');
+                    createPeerConnection(caller);
+                }
+            }
         });
 
-    } catch (e) {
-        log(`❌ Ошибка: ${e.message}`);
-        window.cancelCall();
-    }
-};
+        // Создание WebRTC соединения
+        function createPeerConnection(targetUser) {
+            if (peerConnections[targetUser]) {
+                return;
+            }
 
-// ============================================================
-//  ВХОДЯЩИЙ
-// ============================================================
-function showIncoming(id, from) {
-    if (isCalling || isIncoming) {
-        updateDoc(doc(db, 'calls', id), { rejected: true });
-        return;
-    }
-    isIncoming = true;
-    activeCallId = id;
-    callerName.textContent = from;
-    incomingSection.classList.remove('btn-hidden');
-    setStatus('ringing', `Входящий звонок от ${from}`);
-}
+            const pc = new RTCPeerConnection({
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
+            });
 
-window.acceptCall = async function() {
-    if (!activeCallId) return;
-    log('✅ Принял звонок');
-    incomingSection.classList.add('btn-hidden');
-    setStatus('ringing', 'Подключение...');
+            peerConnections[targetUser] = pc;
 
-    try {
-        const ref = doc(db, 'calls', activeCallId);
-        const snap = await getDoc(ref);
-        const data = snap.data();
-        if (!data || data.rejected) throw new Error('Звонок отменен');
+            // Добавляем локальный аудио поток
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    pc.addTrack(track, localStream);
+                });
+            }
 
-        const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-        peer = new Peer({ initiator: false, trickle: false, config });
+            // Получаем удаленный аудио поток
+            pc.ontrack = (event) => {
+                const audio = new Audio();
+                audio.srcObject = event.streams[0];
+                audio.play().catch(() => {});
+            };
 
-        peer.on('signal', async (s) => {
-            await updateDoc(ref, { answer: JSON.stringify(s), answered: true });
+            // ICE кандидаты
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    const candidateRef = ref(rtdb, `users/${targetUser}/candidate`);
+                    set(candidateRef, event.candidate.toJSON());
+                }
+            };
+
+            // Создаем offer
+            pc.createOffer()
+                .then(offer => pc.setLocalDescription(offer))
+                .then(() => {
+                    const offerRef = ref(rtdb, `users/${targetUser}/offer`);
+                    set(offerRef, pc.localDescription);
+                })
+                .catch(console.error);
+
+            // Слушаем ответ
+            const answerRef = ref(rtdb, `users/${targetUser}/answer`);
+            onValue(answerRef, (snapshot) => {
+                const answer = snapshot.val();
+                if (answer && pc.signalingState !== 'stable') {
+                    pc.setRemoteDescription(new RTCSessionDescription(answer))
+                        .catch(console.error);
+                }
+            });
+
+            // Слушаем кандидаты
+            const candidateRef = ref(rtdb, `users/${targetUser}/candidate`);
+            onValue(candidateRef, (snapshot) => {
+                const candidate = snapshot.val();
+                if (candidate) {
+                    pc.addIceCandidate(new RTCIceCandidate(candidate))
+                        .catch(console.error);
+                }
+            });
+
+            // Слушаем ответ на offer
+            const answerOfferRef = ref(rtdb, `users/${currentUser}/answer`);
+            onValue(answerOfferRef, (snapshot) => {
+                const answer = snapshot.val();
+                if (answer && pc.signalingState === 'have-local-offer') {
+                    pc.setRemoteDescription(new RTCSessionDescription(answer))
+                        .catch(console.error);
+                }
+            });
+
+            // Очистка при закрытии
+            pc.onconnectionstatechange = () => {
+                if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                    closePeerConnection(targetUser);
+                    remove(ref(rtdb, `users/${targetUser}/calling`));
+                    remove(ref(rtdb, `users/${targetUser}/callStatus`));
+                    remove(ref(rtdb, `users/${targetUser}/offer`));
+                    remove(ref(rtdb, `users/${targetUser}/answer`));
+                    remove(ref(rtdb, `users/${targetUser}/candidate`));
+                }
+            };
+        }
+
+        function closePeerConnection(targetUser) {
+            if (peerConnections[targetUser]) {
+                peerConnections[targetUser].close();
+                delete peerConnections[targetUser];
+            }
+            // Очищаем Realtime Database
+            remove(ref(rtdb, `users/${targetUser}/offer`));
+            remove(ref(rtdb, `users/${targetUser}/answer`));
+            remove(ref(rtdb, `users/${targetUser}/candidate`));
+        }
+
+        function updateAllCalls() {
+            // Обновляем состояние всех вызовов
+            Object.keys(peerConnections).forEach(uid => {
+                const card = document.getElementById(`card-${uid}`);
+                if (card) {
+                    const btn = card.querySelector('.btn-call');
+                    if (btn) {
+                        const isCalling = btn.classList.contains('active');
+                        btn.textContent = isCalling ? '🔴 Завершить' : '📞 Позвонить';
+                    }
+                }
+            });
+        }
+
+        // Выход
+        window.logout = function() {
+            const statusRef = ref(rtdb, `users/${currentUser}/status`);
+            set(statusRef, 'offline').then(() => {
+                sessionStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            });
+        };
+
+        // Установка статуса онлайн при загрузке
+        const statusRef = ref(rtdb, `users/${currentUser}/status`);
+        set(statusRef, 'online');
+        onDisconnect(statusRef, () => {
+            set(statusRef, 'offline');
         });
 
-        peer.on('connect', () => {
-            log('✅ Соединено!');
-            setStatus('connected', 'Соединение установлено! 🎤');
-            activeSection.classList.remove('btn-hidden');
-            isCalling = true;
-            isIncoming = false;
-        });
+        // Периодическое обновление статуса
+        setInterval(() => {
+            set(statusRef, 'online');
+        }, 30000);
 
-        peer.signal(JSON.parse(data.offer));
-        await updateDoc(ref, { accepted: true });
-
-    } catch (e) {
-        log(`❌ Ошибка: ${e.message}`);
-        setStatus('error', 'Ошибка подключения');
-        window.hangup();
-    }
-};
-
-window.rejectCall = function() {
-    log('❌ Отклонил звонок');
-    if (activeCallId) {
-        updateDoc(doc(db, 'calls', activeCallId), { rejected: true });
-    }
-    incomingSection.classList.add('btn-hidden');
-    setStatus('idle', 'Звонок отклонен');
-    isIncoming = false;
-    activeCallId = null;
-};
-
-// ============================================================
-//  ОТВЕТ
-// ============================================================
-async function handleAnswer(id, data) {
-    if (!data.answer) return;
-    try {
-        setStatus('ringing', 'Подключение...');
-        peer.signal(JSON.parse(data.answer));
-    } catch (e) {
-        log(`❌ Ошибка: ${e.message}`);
-        window.hangup();
-    }
-}
-
-// ============================================================
-//  ЗАВЕРШЕНИЕ
-// ============================================================
-window.hangup = function() {
-    log('📞 Завершил');
-    if (peer) { peer.destroy(); peer = null; }
-    if (activeCallId) {
-        deleteDoc(doc(db, 'calls', activeCallId)).catch(() => {});
-    }
-    isCalling = false;
-    isIncoming = false;
-    activeCallId = null;
-    outgoingSection.classList.add('btn-hidden');
-    incomingSection.classList.add('btn-hidden');
-    activeSection.classList.add('btn-hidden');
-    setStatus('idle', 'Готов к звонку');
-};
-
-window.cancelCall = function() {
-    if (activeCallId) {
-        updateDoc(doc(db, 'calls', activeCallId), { rejected: true }).catch(() => {});
-    }
-    window.hangup();
-};
-
-// ============================================================
-//  ВЫХОД
-// ============================================================
-window.logout = function() {
-    log('🚪 Выход');
-    updateOnline(false);
-    if (peer) peer.destroy();
-    localStorage.removeItem('currentUser');
-    window.location.href = 'login.html';
-};
-
-log('✅ Скрипт загружен');
-</script>
-
+        // Предзагрузка микрофона при входе
+        if (navigator.mediaDevices) {
+            initMicrophone();
+        }
+    </script>
 </body>
 </html>
