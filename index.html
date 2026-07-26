@@ -24,10 +24,7 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .user-info {
-            font-weight: 600;
-            color: #333;
-        }
+        .user-info { font-weight: 600; color: #333; }
         .logout-btn {
             background: #e74c3c;
             color: white;
@@ -58,33 +55,20 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: 0.2s;
             margin: 5px;
         }
         button:hover:not(:disabled) { transform: scale(1.03); }
-        button:active:not(:disabled) { transform: scale(0.97); }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-primary { background: #667eea; color: white; }
         .btn-success { background: #34a853; color: white; }
         .btn-danger { background: #ea4335; color: white; }
-        .btn-warning { background: #fbbc05; color: #333; }
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 80px;
-            margin: 10px 0;
-            font-family: monospace;
-        }
         .flex { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .online-users {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin: 10px 0;
+            min-height: 50px;
         }
         .user-badge {
             background: #e8f0fe;
@@ -120,41 +104,57 @@
             margin: 10px 0;
         }
         .hidden { display: none; }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        .debug {
+            background: #263238;
+            color: #aed581;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-        .pulsing { animation: pulse 1.5s infinite; }
-        .user-badge .call-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .online-count {
+            background: #e8f0fe;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
 
-<!-- ШАПКА -->
 <div class="header">
     <div>
         <span class="user-info">👤 <span id="usernameDisplay">Загрузка...</span></span>
         <span style="margin-left:15px;font-size:14px;color:#888;" id="statusDisplay">🟢 Онлайн</span>
+        <span class="online-count" id="onlineCount">👥 0 онлайн</span>
     </div>
     <button class="logout-btn" onclick="window.logout()">🚪 Выйти</button>
 </div>
 
-<!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
 <div class="card">
     <h2>📞 Голосовые звонки</h2>
-    <p style="color:#666;margin:10px 0;">Выберите пользователя для звонка</p>
-    
+    <p style="color:#666;margin:10px 0;">Выберите онлайн-пользователя для звонка</p>
     <div class="online-users" id="usersList">
         <p style="color:#999;">Загрузка пользователей...</p>
     </div>
 </div>
 
-<!-- СТАТУС ЗВОНКА -->
+<div class="card">
+    <details>
+        <summary>🔍 Отладка</summary>
+        <div class="debug" id="debugLog">⏳ Ожидание...</div>
+    </details>
+</div>
+
 <div class="card" id="callStatusCard">
     <div class="status" id="callStatus">📌 Готов к звонку</div>
     
-    <!-- Исходящий звонок -->
     <div id="outgoingSection" class="hidden">
         <div class="flex">
             <button class="btn-danger" onclick="window.cancelCall()">❌ Отменить</button>
@@ -162,7 +162,6 @@
         <p style="margin-top:10px;color:#666;">⏳ Ожидание ответа...</p>
     </div>
 
-    <!-- Входящий звонок -->
     <div id="incomingSection" class="hidden incoming-call">
         <p><strong>📞 Входящий звонок от <span id="callerName">...</span></strong></p>
         <div class="flex">
@@ -171,7 +170,6 @@
         </div>
     </div>
 
-    <!-- Активный звонок -->
     <div id="activeCallSection" class="hidden">
         <div class="flex">
             <button class="btn-danger" onclick="window.hangup()">❌ Завершить звонок</button>
@@ -190,14 +188,39 @@
 
 <script type="module">
 // ======================================================
-//  ИМПОРТ FIREBASE (Ваш конфиг)
+//  ДЕБАГ
+// ======================================================
+const debugLog = document.getElementById('debugLog');
+function debug(msg) {
+    const time = new Date().toLocaleTimeString();
+    debugLog.textContent = `[${time}] ${msg}\n${debugLog.textContent}`;
+    console.log('[DEBUG]', msg);
+}
+debug('🚀 Приложение запускается...');
+
+// ======================================================
+//  ИМПОРТЫ
 // ======================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, push, update, remove, onChildAdded, onChildChanged, once } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+import { 
+    getFirestore, 
+    collection, 
+    query, 
+    where, 
+    getDocs, 
+    onSnapshot,
+    doc, 
+    setDoc, 
+    deleteDoc,
+    addDoc,
+    updateDoc,
+    getDoc,
+    onSnapshot as onSnapshotFS
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 import Peer from 'simple-peer';
 
 // ======================================================
-//  ВАШ КОНФИГ FIREBASE
+//  КОНФИГ
 // ======================================================
 const firebaseConfig = {
     apiKey: "AIzaSyDCtMunMRiOWKSGh939BEU2TvhEgv_wB60",
@@ -209,38 +232,36 @@ const firebaseConfig = {
     appId: "1:407132877855:web:fd29af874d74dcda90912a"
 };
 
-// ======================================================
-//  ИНИЦИАЛИЗАЦИЯ FIREBASE
-// ======================================================
 const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+const db = getFirestore(app);
+debug('🔥 Firestore инициализирован');
 
 // ======================================================
-//  ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+//  ПЕРЕМЕННЫЕ
 // ======================================================
 let currentUser = null;
 let peer = null;
 let activeCallId = null;
 let isCalling = false;
 let isIncomingCall = false;
+let onlineUsers = {};
 
 // ======================================================
-//  ПОЛУЧАЕМ DOM ЭЛЕМЕНТЫ
+//  DOM
 // ======================================================
 const usernameDisplay = document.getElementById('usernameDisplay');
-const statusDisplay = document.getElementById('statusDisplay');
 const usersList = document.getElementById('usersList');
 const callStatus = document.getElementById('callStatus');
 const outgoingSection = document.getElementById('outgoingSection');
 const incomingSection = document.getElementById('incomingSection');
 const activeCallSection = document.getElementById('activeCallSection');
 const callerName = document.getElementById('callerName');
+const onlineCount = document.getElementById('onlineCount');
 
 // ======================================================
-//  ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+//  ИНИЦИАЛИЗАЦИЯ
 // ======================================================
 function initApp() {
-    // Проверка авторизации
     const userData = localStorage.getItem('currentUser');
     if (!userData) {
         window.location.href = 'login.html';
@@ -250,116 +271,167 @@ function initApp() {
     try {
         currentUser = JSON.parse(userData);
         usernameDisplay.textContent = currentUser.login;
+        debug(`✅ Пользователь: ${currentUser.login}`);
     } catch (e) {
         window.location.href = 'login.html';
         return;
     }
 
-    // Обновляем онлайн-статус
-    setOnlineStatus(true);
+    // Онлайн-статус
+    updateOnlineStatus(true);
     
-    // Слушаем входящие звонки
+    // Слушаем онлайн-пользователей
+    listenOnlineUsers();
+    
+    // Слушаем звонки
     listenForCalls();
-
-    // Загружаем список пользователей
-    updateUsersList();
-
-    // Обновляем список каждые 5 секунд
-    setInterval(updateUsersList, 5000);
     
-    // Обновляем онлайн-статус каждые 15 секунд
-    setInterval(() => setOnlineStatus(true), 15000);
+    // Загружаем пользователей
+    loadUsers();
     
-    // При закрытии страницы - уходим оффлайн
+    // Периодическое обновление статуса
+    setInterval(() => updateOnlineStatus(true), 15000);
+    
     window.addEventListener('beforeunload', () => {
-        setOnlineStatus(false);
+        updateOnlineStatus(false);
         if (peer) peer.destroy();
     });
-}
-
-// ======================================================
-//  ОНЛАЙН СТАТУС
-// ======================================================
-function setOnlineStatus(online) {
-    if (currentUser) {
-        const statusRef = ref(database, 'onlineUsers/' + currentUser.login);
-        if (online) {
-            set(statusRef, Date.now());
-        } else {
-            remove(statusRef);
-        }
-    }
-}
-
-// ======================================================
-//  СПИСОК ПОЛЬЗОВАТЕЛЕЙ
-// ======================================================
-async function updateUsersList() {
-    try {
-        // Загружаем аккаунты из accounts.json
-        const response = await fetch('accounts.json?t=' + Date.now());
-        if (!response.ok) throw new Error('Не удалось загрузить аккаунты');
-        const data = await response.json();
-        
-        // Получаем онлайн-статусы из Firebase
-        const onlineRef = ref(database, 'onlineUsers');
-        const snapshot = await once(onlineRef);
-        const onlineUsers = snapshot.val() || {};
-        
-        // Строим список
-        let html = '';
-        const currentLogin = currentUser.login;
-        
-        data.users.forEach(user => {
-            if (user.login === currentLogin) return;
-            
-            const isOnline = onlineUsers[user.login] && 
-                           (Date.now() - onlineUsers[user.login] < 30000);
-            
-            html += `
-                <div class="user-badge">
-                    <span class="status-dot ${isOnline ? 'online' : 'offline'}"></span>
-                    ${user.login}
-                    ${isOnline ? 
-                        `<button class="call-btn" onclick="window.startCall('${user.login}')">📞 Позвонить</button>` : 
-                        `<span style="font-size:12px;color:#999;">(offline)</span>`
-                    }
-                </div>
-            `;
-        });
-        
-        usersList.innerHTML = html || '<p style="color:#999;">Нет других пользователей</p>';
-        
-    } catch (error) {
-        console.error('Update users error:', error);
-        usersList.innerHTML = '<p style="color:#e74c3c;">⚠️ Ошибка загрузки пользователей</p>';
-    }
-}
-
-// ======================================================
-//  СЛУШАЕМ ВХОДЯЩИЕ ЗВОНКИ
-// ======================================================
-function listenForCalls() {
-    const callsRef = ref(database, 'calls');
     
-    // Новые звонки
-    onChildAdded(callsRef, (snapshot) => {
-        const callData = snapshot.val();
-        const callId = snapshot.key;
-        
-        if (callData.to === currentUser.login && !callData.answered && !callData.rejected) {
-            showIncomingCall(callId, callData.from);
+    debug('✅ Приложение готово');
+}
+
+// ======================================================
+//  ОНЛАЙН-СТАТУС
+// ======================================================
+async function updateOnlineStatus(online) {
+    if (!currentUser) return;
+    try {
+        const statusRef = doc(db, 'onlineStatus', currentUser.login);
+        if (online) {
+            await setDoc(statusRef, {
+                login: currentUser.login,
+                timestamp: Date.now()
+            });
+        } else {
+            await deleteDoc(statusRef);
         }
+    } catch (e) {
+        console.error('Status update error:', e);
+    }
+}
+
+// ======================================================
+//  СЛУШАЕМ ОНЛАЙН-ПОЛЬЗОВАТЕЛЕЙ (REALTIME)
+// ======================================================
+function listenOnlineUsers() {
+    const statusRef = collection(db, 'onlineStatus');
+    
+    onSnapshot(statusRef, (snapshot) => {
+        onlineUsers = {};
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if (Date.now() - data.timestamp < 30000) {
+                onlineUsers[data.login] = data.timestamp;
+            }
+        });
+        debug(`🟢 Онлайн: ${Object.keys(onlineUsers).length} пользователей`);
+        updateOnlineCount();
+        renderUsers();
+    });
+}
+
+function updateOnlineCount() {
+    const count = Object.keys(onlineUsers).length;
+    onlineCount.textContent = `👥 ${count} онлайн`;
+}
+
+// ======================================================
+//  ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ ИЗ FIRESTORE
+// ======================================================
+async function loadUsers() {
+    try {
+        const usersRef = collection(db, 'users');
+        const snapshot = await getDocs(usersRef);
+        const users = [];
+        snapshot.forEach(doc => {
+            users.push({ id: doc.id, ...doc.data() });
+        });
+        debug(`📋 Загружено ${users.length} пользователей`);
+        window.allUsers = users;
+        renderUsers();
+    } catch (error) {
+        debug(`❌ Ошибка загрузки: ${error.message}`);
+        usersList.innerHTML = `<p style="color:#e74c3c;">⚠️ Ошибка: ${error.message}</p>`;
+    }
+}
+
+// ======================================================
+//  ✅ ОТОБРАЖЕНИЕ ПОЛЬЗОВАТЕЛЕЙ
+// ======================================================
+function renderUsers() {
+    if (!window.allUsers) return;
+    
+    let html = '';
+    let count = 0;
+    const currentLogin = currentUser.login;
+    
+    window.allUsers.forEach(user => {
+        if (user.login === currentLogin) return;
+        
+        const isOnline = onlineUsers[user.login] !== undefined;
+        count++;
+        
+        html += `
+            <div class="user-badge">
+                <span class="status-dot ${isOnline ? 'online' : 'offline'}"></span>
+                ${user.login}
+                ${isOnline ? 
+                    `<button class="call-btn" onclick="window.startCall('${user.login}')">📞 Позвонить</button>` : 
+                    `<span style="font-size:12px;color:#999;">(offline)</span>`
+                }
+            </div>
+        `;
     });
     
-    // Изменения в звонках (ответ)
-    onChildChanged(callsRef, (snapshot) => {
-        const callData = snapshot.val();
-        const callId = snapshot.key;
-        
-        if (callData.from === currentUser.login && callData.answered && peer) {
-            handleCallAccepted(callId, callData);
-        }
+    if (count === 0) {
+        html = '<p style="color:#999;">😴 Нет других пользователей</p>';
+    }
+    
+    usersList.innerHTML = html;
+    debug(`🔄 Обновлен список: ${count} пользователей`);
+}
+
+// ======================================================
+//  СЛУШАЕМ ЗВОНКИ
+// ======================================================
+function listenForCalls() {
+    const callsRef = collection(db, 'calls');
+    
+    onSnapshot(callsRef, async (snapshot) => {
+        snapshot.docChanges().forEach(async (change) => {
+            const callData = change.doc.data();
+            const callId = change.doc.id;
+            
+            if (change.type === 'added') {
+                // Новый звонок
+                if (callData.to === currentUser.login && 
+                    !callData.answered && 
+                    !callData.rejected) {
+                    debug(`📞 Входящий звонок от ${callData.from}`);
+                    showIncomingCall(callId, callData.from);
+                }
+            }
+            
+            if (change.type === 'modified') {
+                // Ответ на звонок
+                if (callData.from === currentUser.login && 
+                    callData.answered && 
+                    peer) {
+                    debug(`✅ Звонок принят: ${callData.from} -> ${callData.to}`);
+                    await handleCallAccepted(callId, callData);
+                }
+            }
+        });
     });
 }
 
@@ -372,32 +444,35 @@ window.startCall = async function(targetUser) {
         return;
     }
     
+    debug(`📞 Звонок: ${targetUser}`);
     isCalling = true;
     callStatus.textContent = `📞 Звоним ${targetUser}...`;
     callStatus.style.background = '#fff3cd';
     outgoingSection.classList.remove('hidden');
-    activeCallSection.classList.add('hidden');
-    incomingSection.classList.add('hidden');
     
     try {
-        const callRef = push(ref(database, 'calls'));
-        activeCallId = callRef.key;
+        const callRef = await addDoc(collection(db, 'calls'), {
+            from: currentUser.login,
+            to: targetUser,
+            offer: null,
+            answered: false,
+            rejected: false,
+            timestamp: Date.now()
+        });
+        activeCallId = callRef.id;
         
         const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
         peer = new Peer({ initiator: true, trickle: false, config });
         
         peer.on('signal', async (data) => {
-            await update(callRef, {
-                from: currentUser.login,
-                to: targetUser,
-                offer: JSON.stringify(data),
-                answered: false,
-                rejected: false,
-                timestamp: Date.now()
+            debug('📡 Сигнал отправлен');
+            await updateDoc(doc(db, 'calls', activeCallId), {
+                offer: JSON.stringify(data)
             });
         });
         
         peer.on('connect', () => {
+            debug('✅ Соединение!');
             callStatus.textContent = '✅ Соединение установлено! Говорите 🎤';
             callStatus.style.background = '#c8e6c9';
             outgoingSection.classList.add('hidden');
@@ -405,14 +480,12 @@ window.startCall = async function(targetUser) {
         });
         
         peer.on('error', (err) => {
-            console.error('Peer error:', err);
+            debug(`❌ Ошибка: ${err.message}`);
             window.cancelCall();
-            callStatus.textContent = '❌ Ошибка соединения';
-            callStatus.style.background = '#ffcdd2';
         });
         
     } catch (error) {
-        console.error('Start call error:', error);
+        debug(`❌ Ошибка: ${error.message}`);
         window.cancelCall();
     }
 };
@@ -422,7 +495,7 @@ window.startCall = async function(targetUser) {
 // ======================================================
 function showIncomingCall(callId, fromUser) {
     if (isCalling || isIncomingCall) {
-        update(ref(database, 'calls/' + callId), { rejected: true });
+        updateDoc(doc(db, 'calls', callId), { rejected: true });
         return;
     }
     
@@ -442,8 +515,9 @@ window.acceptCall = async function() {
     callStatus.style.background = '#fff9c4';
     
     try {
-        const snapshot = await once(ref(database, 'calls/' + activeCallId));
-        const callData = snapshot.val();
+        const callDoc = doc(db, 'calls', activeCallId);
+        const callSnap = await getDoc(callDoc);
+        const callData = callSnap.data();
         
         if (!callData || callData.rejected) {
             throw new Error('Звонок отменен');
@@ -453,13 +527,14 @@ window.acceptCall = async function() {
         peer = new Peer({ initiator: false, trickle: false, config });
         
         peer.on('signal', async (data) => {
-            await update(ref(database, 'calls/' + activeCallId), {
+            await updateDoc(callDoc, {
                 answer: JSON.stringify(data),
                 answered: true
             });
         });
         
         peer.on('connect', () => {
+            debug('✅ Соединение!');
             callStatus.textContent = '✅ Соединение установлено! Говорите 🎤';
             callStatus.style.background = '#c8e6c9';
             activeCallSection.classList.remove('hidden');
@@ -469,21 +544,17 @@ window.acceptCall = async function() {
         
         peer.signal(JSON.parse(callData.offer));
         
-        await update(ref(database, 'calls/' + activeCallId), {
-            accepted: true
-        });
+        await updateDoc(callDoc, { accepted: true });
         
     } catch (error) {
-        console.error('Accept call error:', error);
-        callStatus.textContent = '❌ Ошибка подключения';
-        callStatus.style.background = '#ffcdd2';
+        debug(`❌ Ошибка: ${error.message}`);
         window.hangup();
     }
 };
 
 window.rejectCall = function() {
     if (activeCallId) {
-        update(ref(database, 'calls/' + activeCallId), { rejected: true });
+        updateDoc(doc(db, 'calls', activeCallId), { rejected: true });
     }
     incomingSection.classList.add('hidden');
     callStatus.textContent = '📌 Звонок отклонен';
@@ -493,7 +564,7 @@ window.rejectCall = function() {
 };
 
 // ======================================================
-//  ОБРАБОТКА ПРИНЯТОГО ЗВОНКА
+//  ОБРАБОТКА ОТВЕТА
 // ======================================================
 async function handleCallAccepted(callId, callData) {
     if (!callData.answer) return;
@@ -501,30 +572,25 @@ async function handleCallAccepted(callId, callData) {
     try {
         callStatus.textContent = '🔄 Подключение...';
         callStatus.style.background = '#fff9c4';
-        
         peer.signal(JSON.parse(callData.answer));
-        
-        setTimeout(() => {
-            remove(ref(database, 'calls/' + callId));
-        }, 5000);
-        
     } catch (error) {
-        console.error('Handle accepted error:', error);
+        debug(`❌ Ошибка: ${error.message}`);
         window.hangup();
     }
 }
 
 // ======================================================
-//  ЗАВЕРШЕНИЕ ЗВОНКА
+//  ЗАВЕРШЕНИЕ
 // ======================================================
 window.hangup = function() {
+    debug('📞 Завершение');
     if (peer) {
         peer.destroy();
         peer = null;
     }
     
     if (activeCallId) {
-        remove(ref(database, 'calls/' + activeCallId));
+        deleteDoc(doc(db, 'calls', activeCallId));
     }
     
     isCalling = false;
@@ -540,7 +606,7 @@ window.hangup = function() {
 
 window.cancelCall = function() {
     if (activeCallId) {
-        update(ref(database, 'calls/' + activeCallId), { rejected: true });
+        updateDoc(doc(db, 'calls', activeCallId), { rejected: true });
     }
     window.hangup();
 };
@@ -549,7 +615,8 @@ window.cancelCall = function() {
 //  ВЫХОД
 // ======================================================
 window.logout = function() {
-    setOnlineStatus(false);
+    debug('🚪 Выход');
+    updateOnlineStatus(false);
     if (peer) peer.destroy();
     localStorage.removeItem('currentUser');
     window.location.href = 'login.html';
@@ -559,9 +626,6 @@ window.logout = function() {
 //  ЗАПУСК
 // ======================================================
 initApp();
-
-// Экспортируем для глобального доступа
-window.currentUser = currentUser;
 </script>
 </body>
 </html>
