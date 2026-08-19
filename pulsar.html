@@ -11,7 +11,7 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Press+Start+2P&display=swap"/></noscript>
 <style>
 :root{
-  --bg:#08080d;--surface:#0e0e16;--surface-2:#131320;--surface-3:#191926;--surface-4:#1e1e2e;
+  --bg:#0e0e16;--surface:#0e0e16;--surface-2:#131320;--surface-3:#191926;--surface-4:#1e1e2e;
   --border:rgba(255,255,255,.065);--border-h:rgba(255,255,255,.12);
   --accent:#ffffff;--accent-dim:rgba(255,255,255,.07);--accent-mid:rgba(255,255,255,.15);
   --text:#e8e8f4;--muted:#8888a0;--muted-2:#44445a;--muted-3:#1c1c28;
@@ -211,7 +211,7 @@ a{color:inherit;text-decoration:none}
 .user-panel{
   height:52px;border-top:1px solid var(--border);
   display:flex;align-items:center;gap:9px;padding:0 14px;
-  flex-shrink:0;background:rgba(8,8,13,.7);backdrop-filter:blur(8px);
+  flex-shrink:0;background:rgba(14,14,22,.7);backdrop-filter:blur(8px);
 }
 .user-panel .user-info{flex:1;min-width:0}
 .user-panel .user-name{font-size:.76rem;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -226,7 +226,7 @@ a{color:inherit;text-decoration:none}
 #main{grid-area:main;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);position:relative}
 
 /* Topbar */
-.topbar{height:var(--topbar-h);flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--border);background:rgba(8,8,13,.7);backdrop-filter:blur(12px);position:relative;z-index:5}
+.topbar{height:var(--topbar-h);flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--border);background:rgba(14,14,22,.7);backdrop-filter:blur(12px);position:relative;z-index:5}
 .topbar-name{font-size:.85rem;font-weight:500;display:flex;align-items:center;gap:7px;min-width:0}
 .topbar-hash{color:var(--muted);font-size:.9rem;flex-shrink:0}
 .topbar-ch-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -865,13 +865,13 @@ a{color:inherit;text-decoration:none}
 
 <!-- Mobile nav -->
 <nav id="mob-nav">
-  <button class="mob-nav-btn active" id="mob-btn-channels">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-    <span class="mob-dot" id="mob-dot-ch"></span><span>Каналы</span>
-  </button>
-  <button class="mob-nav-btn" id="mob-btn-dms">
+  <button class="mob-nav-btn active" id="mob-btn-dms">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v9a2 2 0 01-2 2H6l-4 3V4z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
     <span class="mob-dot" id="mob-dot-dm"></span><span>Сообщения</span>
+  </button>
+  <button class="mob-nav-btn" id="mob-btn-channels">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="7" y="2" width="6" height="9" rx="3" stroke="currentColor" stroke-width="1.4"/><path d="M4 10a6 6 0 0012 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M10 16v2M8 18h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <span class="mob-dot" id="mob-dot-ch"></span><span>Комнаты</span>
   </button>
   <button class="mob-nav-btn" id="mob-btn-new">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/><path d="M10 6v8M6 10h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -1040,17 +1040,7 @@ a{color:inherit;text-decoration:none}
     <div class="modal-foot"><button class="btn btn-ghost" data-modal="modal-channel">Отмена</button><button class="btn btn-primary" id="btn-create-channel">Создать</button></div>
   </div>
 </div>
-<div class="modal-overlay" id="modal-dm">
-  <div class="modal">
-    <button class="modal-close" data-modal="modal-dm"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
-    <div class="modal-head"><div class="modal-title">Личное сообщение</div></div>
-    <div class="modal-body">
-      <div class="field"><label class="field-label">Поиск пользователя</label><input class="field-input" id="dm-search" placeholder="Имя или email…" autocomplete="off"/></div>
-      <div id="dm-user-list" style="max-height:260px;overflow-y:auto;margin-top:4px"></div>
-    </div>
-    <div class="modal-foot"><button class="btn btn-ghost" data-modal="modal-dm">Закрыть</button></div>
-  </div>
-</div>
+
 <div class="modal-overlay" id="modal-members">
   <div class="modal">
     <button class="modal-close" data-modal="modal-members"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
@@ -1201,6 +1191,7 @@ import {
 import {
   getStorage, ref as sRef, uploadBytesResumable, getDownloadURL
 } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-storage.js';
+import { Sheet } from '/pulsar.galelium/storage/sheet.js';
 
 /* ════════════════════════════════════════════════════════════════
  *  FIREBASE CONFIG
@@ -2275,9 +2266,9 @@ async function openOrCreateDM(otherUid){
   const members=[me.uid,otherUid].sort();
   try{
     const snap=await getDocs(query(collection(fdb,'pulsar_channels'),where('type','==','direct'),where('members','==',members)));
-    if(!snap.empty){closeModal('modal-dm');openChannel(snap.docs[0].id);return;}
+    if(!snap.empty){Sheet.close('dm');openChannel(snap.docs[0].id);return;}
     const ref=await addDoc(collection(fdb,'pulsar_channels'),{type:'direct',members,createdBy:me.uid,createdAt:serverTimestamp(),order:9999,lastMessage:null});
-    closeModal('modal-dm');openChannel(ref.id);
+    Sheet.close('dm');openChannel(ref.id);
   }catch(e){toast('Ошибка: '+e.message,'err');}
 }
 function renderDMUserSearch(q){
@@ -2373,21 +2364,41 @@ function initUI(){
   main.addEventListener('dragover',e=>e.preventDefault());
   main.addEventListener('drop',e=>{e.preventDefault();dragCounter=0;$('drag-overlay').classList.remove('active');const f=e.dataTransfer.files[0];if(f&&currentCh)handleFileSelect(f);});
 
-  // Compose btn — показывает меню выбора: канал или DM
-  $('btn-compose')?.addEventListener('click', () => {
-    // Открываем модалку DM (написать кому-то) — основной сценарий
-    $('dm-search').value = ''; openModal('modal-dm'); renderDMUserSearch('');
-    setTimeout(() => $('dm-search').focus(), 100);
+  // ── DM Sheet — инициализация ──────────────────────────────────
+  Sheet.define({
+    id: 'dm',
+    title: 'Написать сообщение',
+    zIndex: 800,
+    onOpen() {
+      const inp = $('dm-search');
+      if (inp) { inp.value = ''; renderDMUserSearch(''); setTimeout(() => inp.focus(), 200); }
+    },
   });
+  Sheet.body('dm').innerHTML = `
+    <div style="padding:14px 18px 10px;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:8px 14px;transition:border-color .15s">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="color:var(--muted-2);flex-shrink:0">
+          <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        <input id="dm-search" placeholder="Поиск по email…" autocomplete="off"
+          style="flex:1;background:none;border:none;outline:none;font-size:.82rem;color:var(--text);caret-color:var(--accent);font-family:var(--font)"/>
+      </div>
+    </div>
+    <div id="dm-user-list" style="padding:4px 10px 16px"></div>
+  `;
+  $('dm-search').addEventListener('input', e => renderDMUserSearch(e.target.value));
+
+  // Compose btn → открыть DM Sheet
+  $('btn-compose')?.addEventListener('click', () => Sheet.open('dm'));
 
   // Channel creation (через модалку)
   $('btn-create-channel').addEventListener('click', createChannel);
   $('ch-new-name').addEventListener('keydown', e => { if(e.key==='Enter') createChannel(); });
 
-  // DM
-  $('btn-new-dm')?.addEventListener('click', () => { $('dm-search').value=''; openModal('modal-dm'); renderDMUserSearch(''); setTimeout(()=>$('dm-search').focus(),100); });
+  // DM / Channel new
+  $('btn-new-dm')?.addEventListener('click', () => Sheet.open('dm'));
   $('btn-new-channel')?.addEventListener('click', () => { $('ch-create-err').style.display='none'; openModal('modal-channel'); setTimeout(()=>$('ch-new-name').focus(),100); });
-  $('dm-search').addEventListener('input', e => renderDMUserSearch(e.target.value));
 
   // Search
   $('btn-search-toggle').addEventListener('click',()=>{
