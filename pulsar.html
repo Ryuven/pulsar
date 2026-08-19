@@ -1040,7 +1040,17 @@ a{color:inherit;text-decoration:none}
     <div class="modal-foot"><button class="btn btn-ghost" data-modal="modal-channel">Отмена</button><button class="btn btn-primary" id="btn-create-channel">Создать</button></div>
   </div>
 </div>
-
+<div class="modal-overlay" id="modal-dm">
+  <div class="modal">
+    <button class="modal-close" data-modal="modal-dm"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+    <div class="modal-head"><div class="modal-title">Личное сообщение</div></div>
+    <div class="modal-body">
+      <div class="field"><label class="field-label">Поиск пользователя</label><input class="field-input" id="dm-search" placeholder="Имя или email…" autocomplete="off"/></div>
+      <div id="dm-user-list" style="max-height:260px;overflow-y:auto;margin-top:4px"></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" data-modal="modal-dm">Закрыть</button></div>
+  </div>
+</div>
 <div class="modal-overlay" id="modal-members">
   <div class="modal">
     <button class="modal-close" data-modal="modal-members"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
@@ -1191,7 +1201,6 @@ import {
 import {
   getStorage, ref as sRef, uploadBytesResumable, getDownloadURL
 } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-storage.js';
-import { Sheet } from '/pulsar.galelium/storage/sheet.js';
 
 /* ════════════════════════════════════════════════════════════════
  *  FIREBASE CONFIG
@@ -2266,9 +2275,9 @@ async function openOrCreateDM(otherUid){
   const members=[me.uid,otherUid].sort();
   try{
     const snap=await getDocs(query(collection(fdb,'pulsar_channels'),where('type','==','direct'),where('members','==',members)));
-    if(!snap.empty){Sheet.close('dm');openChannel(snap.docs[0].id);return;}
+    if(!snap.empty){closeModal('modal-dm');openChannel(snap.docs[0].id);return;}
     const ref=await addDoc(collection(fdb,'pulsar_channels'),{type:'direct',members,createdBy:me.uid,createdAt:serverTimestamp(),order:9999,lastMessage:null});
-    Sheet.close('dm');openChannel(ref.id);
+    closeModal('modal-dm');openChannel(ref.id);
   }catch(e){toast('Ошибка: '+e.message,'err');}
 }
 function renderDMUserSearch(q){
@@ -2364,41 +2373,21 @@ function initUI(){
   main.addEventListener('dragover',e=>e.preventDefault());
   main.addEventListener('drop',e=>{e.preventDefault();dragCounter=0;$('drag-overlay').classList.remove('active');const f=e.dataTransfer.files[0];if(f&&currentCh)handleFileSelect(f);});
 
-  // ── DM Sheet — инициализация ──────────────────────────────────
-  Sheet.define({
-    id: 'dm',
-    title: 'Написать сообщение',
-    zIndex: 800,
-    onOpen() {
-      const inp = $('dm-search');
-      if (inp) { inp.value = ''; renderDMUserSearch(''); setTimeout(() => inp.focus(), 200); }
-    },
+  // Compose btn — показывает меню выбора: канал или DM
+  $('btn-compose')?.addEventListener('click', () => {
+    // Открываем модалку DM (написать кому-то) — основной сценарий
+    $('dm-search').value = ''; openModal('modal-dm'); renderDMUserSearch('');
+    setTimeout(() => $('dm-search').focus(), 100);
   });
-  Sheet.body('dm').innerHTML = `
-    <div style="padding:14px 18px 10px;flex-shrink:0">
-      <div style="display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:8px 14px;transition:border-color .15s">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="color:var(--muted-2);flex-shrink:0">
-          <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/>
-          <path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        </svg>
-        <input id="dm-search" placeholder="Поиск по email…" autocomplete="off"
-          style="flex:1;background:none;border:none;outline:none;font-size:.82rem;color:var(--text);caret-color:var(--accent);font-family:var(--font)"/>
-      </div>
-    </div>
-    <div id="dm-user-list" style="padding:4px 10px 16px"></div>
-  `;
-  $('dm-search').addEventListener('input', e => renderDMUserSearch(e.target.value));
-
-  // Compose btn → открыть DM Sheet
-  $('btn-compose')?.addEventListener('click', () => Sheet.open('dm'));
 
   // Channel creation (через модалку)
   $('btn-create-channel').addEventListener('click', createChannel);
   $('ch-new-name').addEventListener('keydown', e => { if(e.key==='Enter') createChannel(); });
 
-  // DM / Channel new
-  $('btn-new-dm')?.addEventListener('click', () => Sheet.open('dm'));
+  // DM
+  $('btn-new-dm')?.addEventListener('click', () => { $('dm-search').value=''; openModal('modal-dm'); renderDMUserSearch(''); setTimeout(()=>$('dm-search').focus(),100); });
   $('btn-new-channel')?.addEventListener('click', () => { $('ch-create-err').style.display='none'; openModal('modal-channel'); setTimeout(()=>$('ch-new-name').focus(),100); });
+  $('dm-search').addEventListener('input', e => renderDMUserSearch(e.target.value));
 
   // Search
   $('btn-search-toggle').addEventListener('click',()=>{
