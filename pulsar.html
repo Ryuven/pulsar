@@ -19,7 +19,7 @@
   --font-display:'Syne',sans-serif;--font:'DM Sans',system-ui,sans-serif;
   --mono:'JetBrains Mono','Fira Code','Consolas',monospace;
   --font-pixel:'Press Start 2P',monospace;
-  --sb-w:320px;--topbar-h:52px;--mob-nav-h:58px;--thread-w:340px;
+  --sb-w:320px;--topbar-h:50px;--mob-nav-h:58px;--thread-w:340px;
   --t:.22s;--tf:.14s;--ease:cubic-bezier(.4,0,.2,1);--r:6px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -122,12 +122,16 @@ a{color:inherit;text-decoration:none}
 }
 
 /* Аватар/иконка */
+.ch-ava-wrap{
+  position:relative;flex-shrink:0;
+  width:46px;height:46px;
+}
 .ch-ava{
   width:46px;height:46px;border-radius:50%;
   background:var(--surface-3);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;
   font-size:.9rem;font-weight:700;color:var(--accent);
-  flex-shrink:0;position:relative;overflow:hidden;
+  position:relative;overflow:hidden;
   transition:border-color var(--tf);
 }
 .ch-ava img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
@@ -140,10 +144,11 @@ a{color:inherit;text-decoration:none}
 
 /* Presence dot */
 .ch-presence{
-  position:absolute;bottom:1px;right:1px;
-  width:12px;height:12px;border-radius:50%;
+  position:absolute;bottom:0;right:0;
+  width:11px;height:11px;border-radius:50%;
   border:2px solid var(--surface);
   transition:border-color var(--tf);
+  pointer-events:none;
 }
 .ch-card.active .ch-presence{border-color:rgba(255,255,255,.06)}
 .ch-presence.online{background:var(--green)}
@@ -218,7 +223,7 @@ a{color:inherit;text-decoration:none}
 .user-panel .user-status{font-size:.6rem;color:var(--muted);display:flex;align-items:center;gap:4px}
 .user-status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;transition:background .3s}
 .user-actions{display:flex;gap:2px}
-.icon-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);color:var(--muted);transition:background var(--tf),color var(--tf)}
+.icon-btn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);color:var(--muted);transition:background var(--tf),color var(--tf)}
 .icon-btn:hover{background:var(--surface-3);color:var(--text)}
 .icon-btn.active{color:var(--accent)}
 
@@ -226,13 +231,14 @@ a{color:inherit;text-decoration:none}
 #main{grid-area:main;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);position:relative}
 
 /* Topbar */
-.topbar{height:var(--topbar-h);flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--border);background:rgba(14,14,22,.7);backdrop-filter:blur(12px);position:relative;z-index:5}
-.topbar-name{font-size:.85rem;font-weight:500;display:flex;align-items:center;gap:7px;min-width:0}
-.topbar-hash{color:var(--muted);font-size:.9rem;flex-shrink:0}
-.topbar-ch-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.topbar-sep{width:1px;height:16px;background:var(--border);flex-shrink:0;margin:0 4px}
-.topbar-desc{font-size:.7rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
-.topbar-actions{display:flex;gap:4px;margin-left:auto;flex-shrink:0}
+.topbar{height:var(--topbar-h);flex-shrink:0;display:flex;align-items:center;gap:6px;padding:0 10px;border-bottom:1px solid var(--border);background:rgba(14,14,22,.7);backdrop-filter:blur(12px);position:relative;z-index:5}
+.topbar-name{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.topbar-hash{display:none}
+.topbar-ch-name{font-size:.88rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3}
+.topbar-sep{display:none}
+.topbar-desc{font-size:.7rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3}
+.topbar-desc:empty{display:none}
+.topbar-actions{display:flex;gap:2px;flex-shrink:0;align-items:center}
 
 /* Pinned bar */
 #pinned-bar{display:none;align-items:center;gap:10px;padding:7px 16px;background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border-bottom:1px solid rgba(255,255,255,.10);cursor:pointer;transition:background var(--tf);flex-shrink:0}
@@ -245,16 +251,6 @@ a{color:inherit;text-decoration:none}
 .pinned-close:hover{color:var(--text);background:var(--surface-3)}
 
 /* Search bar */
-#search-bar{display:none;padding:8px 14px;background:var(--surface-2);border-bottom:1px solid var(--border);flex-shrink:0;gap:8px;align-items:center}
-#search-bar.visible{display:flex;animation:slideDown .18s var(--ease)}
-@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-#search-input-ch{flex:1;background:var(--surface-3);border:1px solid var(--border);color:var(--text);font-size:.8rem;padding:7px 12px;border-radius:var(--r);transition:border-color var(--tf)}
-#search-input-ch:focus{border-color:var(--accent-mid)}
-#search-input-ch::placeholder{color:var(--muted-2)}
-#search-results-count{font-size:.65rem;color:var(--muted-2);white-space:nowrap;min-width:72px;text-align:right}
-.search-nav-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;color:var(--muted);transition:background var(--tf),color var(--tf)}
-.search-nav-btn:hover:not(:disabled){background:var(--surface-3);color:var(--text)}
-.search-nav-btn:disabled{opacity:.3;cursor:not-allowed}
 
 /* ── DRAG DROP OVERLAY ── */
 #drag-overlay{position:absolute;inset:0;z-index:50;background:rgba(255,255,255,.04);border:2px dashed var(--accent);display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;backdrop-filter:blur(2px)}
@@ -282,7 +278,7 @@ a{color:inherit;text-decoration:none}
 .msg-group.search-cur .msg-bubble{background:rgba(255,255,255,.07)!important;outline:1px solid var(--accent)}
 /* Row — bubble alignment */
 .msg-row{display:flex;align-items:flex-end;gap:8px}
-.msg-row.is-me{flex-direction:row-reverse}
+.msg-row.is-me{justify-content:flex-end}
 /* Avatar */
 .msg-av{width:30px;height:30px;border-radius:50%;flex-shrink:0;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-mid);transition:transform var(--tf);position:relative;align-self:flex-end}
 .msg-av img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%}
@@ -435,8 +431,12 @@ a{color:inherit;text-decoration:none}
 .mention-online{width:6px;height:6px;border-radius:50%;background:var(--green);margin-left:auto;flex-shrink:0}
 
 /* ── INPUT ── */
-.input-wrap{padding:0 14px 14px;flex-shrink:0;position:relative}
-.upload-preview{display:none;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-bottom:none;border-radius:var(--r) var(--r) 0 0;padding:8px 12px}
+.input-wrap{
+  padding:0;flex-shrink:0;position:relative;
+  background:var(--bg);
+  border-top:1px solid var(--border);
+}
+.upload-preview{display:none;align-items:center;gap:10px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);padding:8px 14px}
 .upload-preview.visible{display:flex}
 .upload-thumb{width:40px;height:40px;border-radius:5px;object-fit:cover;background:var(--surface-3);flex-shrink:0;border:1px solid var(--border)}
 .upload-info{flex:1;min-width:0}
@@ -446,27 +446,32 @@ a{color:inherit;text-decoration:none}
 .upload-cancel{color:var(--muted);padding:4px;border-radius:4px;transition:color var(--tf),background var(--tf);flex-shrink:0}
 .upload-cancel:hover{color:var(--red);background:rgba(208,96,112,.08)}
 
-.input-reply-bar{display:none;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-bottom:none;border-radius:var(--r) var(--r) 0 0;padding:8px 12px}
+.input-reply-bar{display:none;align-items:center;gap:8px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);padding:8px 14px}
 .input-reply-bar.visible{display:flex}
 .input-reply-to{font-size:.68rem;color:var(--muted);flex-shrink:0}.input-reply-to strong{color:var(--accent)}
 .input-reply-preview{font-size:.68rem;color:var(--muted-2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .input-reply-close{color:var(--muted);padding:3px;border-radius:3px;transition:color var(--tf),background var(--tf);flex-shrink:0}
 .input-reply-close:hover{color:var(--text);background:var(--surface-3)}
 
-.input-box{display:flex;align-items:flex-end;gap:6px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:7px 8px;transition:border-color .18s,box-shadow .18s}
-.has-above .input-box{border-radius:0 0 var(--r) var(--r)}
-.input-box:focus-within{border-color:rgba(255,255,255,.18);box-shadow:0 0 0 2px rgba(255,255,255,.04)}
-#msg-input{flex:1;background:none;color:var(--text);font-size:.82rem;line-height:1.55;resize:none;min-height:22px;max-height:180px;overflow-y:auto;padding:4px 0;tab-size:4}
+.input-box{
+  display:flex;align-items:flex-end;gap:8px;
+  background:transparent;
+  border:none;border-radius:0;
+  padding:10px 14px;
+}
+.has-above .input-box{border-top:1px solid var(--border)}
+.input-box:focus-within{background:transparent}
+#msg-input{flex:1;background:none;color:var(--text);font-size:.82rem;line-height:1.55;resize:none;min-height:22px;max-height:140px;overflow-y:auto;padding:5px 0;tab-size:4}
 #msg-input::placeholder{color:var(--muted-2)}
 
-.input-icon-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);color:var(--muted-2);transition:color var(--tf),background var(--tf);flex-shrink:0;cursor:pointer}
-.input-icon-btn:hover{color:var(--accent);background:var(--surface-3)}
-.input-send{width:32px;height:32px;background:var(--accent);flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:var(--r);transition:opacity var(--tf),transform var(--tf),box-shadow var(--tf)}
-.input-send:hover:not(:disabled){opacity:.88;transform:scale(1.05);box-shadow:0 0 12px rgba(255,255,255,.18)}
-.input-send:disabled{opacity:.28;cursor:not-allowed;transform:none}
-.input-meta{display:flex;align-items:center;justify-content:space-between;margin-top:5px;padding:0 2px}
-.input-hint{font-size:.6rem;color:var(--muted-2)}
-.char-count{font-size:.6rem;color:var(--muted-2);transition:color var(--tf)}
+.input-icon-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:var(--muted-2);transition:color var(--tf),background var(--tf);flex-shrink:0;cursor:pointer}
+.input-icon-btn:hover{color:var(--text);background:rgba(255,255,255,.06)}
+/* Кнопка отправки — круглая */
+.input-send{width:34px;height:34px;background:var(--accent);flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:opacity .18s,transform .18s,box-shadow .18s}
+.input-send:hover:not(:disabled){opacity:.9;transform:scale(1.07);box-shadow:0 0 16px rgba(255,255,255,.2)}
+.input-send:disabled{opacity:.22;cursor:not-allowed;transform:none}
+/* Счётчик символов — минимально */
+.char-count{font-size:.58rem;color:var(--muted-2);transition:color var(--tf);text-align:right;padding:2px 14px 6px}
 .char-count.warn{color:#aaaacc}
 .char-count.over{color:var(--red)}
 
@@ -804,7 +809,7 @@ a{color:inherit;text-decoration:none}
 @keyframes skPulse{0%,100%{opacity:.35}50%{opacity:.7}}
 
 /* Mobile nav */
-#mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;height:var(--mob-nav-h);background:var(--surface);border-top:1px solid var(--border);align-items:stretch;backdrop-filter:blur(12px)}
+#mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;height:var(--mob-nav-h);background:var(--bg);border:none;align-items:stretch}
 .mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.58rem;letter-spacing:.05em;color:var(--muted);cursor:pointer;transition:color var(--tf);border:none;background:none;padding:6px 4px;position:relative}
 .mob-nav-btn.active{color:var(--accent)}
 .mob-dot{position:absolute;top:5px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid var(--surface);display:none}
@@ -821,16 +826,26 @@ a{color:inherit;text-decoration:none}
   #sidebar.open{transform:translateX(0)}
   #thread-panel{position:fixed;inset:0;bottom:var(--mob-nav-h);z-index:250}
   #mob-nav{display:flex}
+  /* input-wrap фиксируется вплотную над nav — никакого зазора */
+  .input-wrap{
+    position:fixed;
+    bottom:var(--mob-nav-h);
+    left:0;right:0;
+    z-index:120;
+    /* border слияния убран — разделение только сверху input-wrap */
+  }
+  /* msg-list получает отступ снизу чтобы последние сообщения не скрывались за инпутом */
+  #msg-list{padding-bottom:calc(var(--mob-nav-h) + 20px)}
+  /* main больше не нужен padding-bottom — инпут фиксирован */
   #main{padding-bottom:var(--mob-nav-h)}
   .topbar-mob-menu{display:flex!important}
-  .input-hint,.input-meta .input-hint{display:none}
   .nc-mob-btn{display:flex}
   .msg-action-btn::before{display:none}
   .msg-action-sep{display:none}
   #toast{bottom:calc(var(--mob-nav-h) + 8px)}
   #notif-bar{top:auto;bottom:calc(var(--mob-nav-h) + 60px);right:8px}
   .notif-card{width:calc(100vw - 44px)}
-  #scroll-btn{bottom:calc(var(--mob-nav-h) + 80px)}
+  #scroll-btn{bottom:calc(var(--mob-nav-h) + 80px + 56px)}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
@@ -914,17 +929,14 @@ a{color:inherit;text-decoration:none}
     <div id="conversation" style="display:none;flex-direction:column;flex:1;overflow:hidden;position:relative">
       <!-- Topbar -->
       <div class="topbar">
-        <button class="topbar-back-btn" id="btn-back-to-chats" title="Назад к чатам"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 4L5 8l5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="topbar-back-btn" id="btn-back-to-chats" title="Закрыть"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="topbar-name">
-          <span class="topbar-hash" id="ch-icon">#</span>
+          <span class="topbar-hash" id="ch-icon" style="display:none">#</span>
           <span class="topbar-ch-name" id="ch-name">—</span>
+          <span class="topbar-desc" id="ch-desc"></span>
         </div>
-        <div class="topbar-sep"></div>
-        <div class="topbar-desc" id="ch-desc"></div>
         <div class="topbar-actions">
-          <button class="icon-btn" id="btn-search-toggle" title="Поиск"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
-          <button class="icon-btn" id="btn-pinned" title="Закреплённые"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 1L13 5l-3.5 1L6 9.5 5 13 1 9l3.5-1L8 4.5 9 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M1 13l3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
-          <button class="icon-btn" id="btn-members" title="Участники"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="5" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10.5" cy="5" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M12.5 12c0-1.7-1-3-2.5-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          <button class="icon-btn" id="btn-chat-menu" title="Информация"><svg width="16" height="16" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
         </div>
       </div>
 
@@ -935,14 +947,6 @@ a{color:inherit;text-decoration:none}
         <button class="pinned-close" id="pinned-bar-close">✕</button>
       </div>
 
-      <!-- Search bar -->
-      <div id="search-bar">
-        <input id="search-input-ch" placeholder="Поиск по сообщениям…" autocomplete="off"/>
-        <span id="search-results-count"></span>
-        <button class="search-nav-btn" id="search-prev" disabled><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 9L5 6l3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="search-nav-btn" id="search-next" disabled><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="search-nav-btn" id="search-close"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
-      </div>
 
       <!-- Messages -->
       <div id="msg-list"></div>
@@ -977,7 +981,6 @@ a{color:inherit;text-decoration:none}
           <button class="input-reply-close" id="reply-close"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
         </div>
         <div class="input-box" id="input-box">
-          <button class="input-icon-btn" id="emoji-toggle" type="button" title="Эмодзи">😊</button>
           <label class="input-icon-btn" for="file-input" title="Прикрепить файл" style="cursor:pointer">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12.5 7L7 12.5a4 4 0 01-5.7-5.6L7.5 1a2.5 2.5 0 013.5 3.5L4.8 10.8a1 1 0 01-1.4-1.4L9 3.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </label>
@@ -985,10 +988,7 @@ a{color:inherit;text-decoration:none}
           <textarea id="msg-input" placeholder="Сообщение…" rows="1"></textarea>
           <button class="input-send" id="btn-send" disabled><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12.5 1.5L1.5 5.5l4 2 2 4 5-10z" stroke="#08080d" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
         </div>
-        <div class="input-meta">
-          <div class="input-hint">Enter — отправить · Shift+Enter — перенос · @ — упомянуть</div>
-          <div class="char-count" id="char-count"></div>
-        </div>
+        <div class="char-count" id="char-count"></div>
         <div class="emoji-picker" id="emoji-picker"></div>
         <!-- Mention popup -->
         <div id="mention-popup"></div>
@@ -1029,20 +1029,7 @@ a{color:inherit;text-decoration:none}
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-members">
-  <div class="modal">
-    <button class="modal-close" data-modal="modal-members"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
-    <div class="modal-head"><div class="modal-title">Участники</div></div>
-    <div class="modal-body" id="modal-members-body" style="max-height:380px;overflow-y:auto"></div>
-  </div>
-</div>
-<div class="modal-overlay" id="modal-pinned">
-  <div class="modal">
-    <button class="modal-close" data-modal="modal-pinned"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
-    <div class="modal-head"><div class="modal-title">Закреплённые сообщения</div></div>
-    <div class="modal-body"><div class="pinned-list" id="pinned-list"></div></div>
-  </div>
-</div>
+
 
 <div id="toast"><span class="toast-dot"></span><span id="toast-msg"></span></div>
 
@@ -1146,6 +1133,7 @@ let threadMsgId=null, threadUnsub=null;
 let pinnedMsgs=[], searchResults=[], searchIdx=0;
 let mutedChannels=new Set(JSON.parse(localStorage.getItem('p_muted')||'[]'));
 let unreadCounts={};
+let _openingChId=null;
 let pendingFile=null, uploadTask=null;
 let typingTimer=null, typingUnsub=null;
 let newMsgCount=0; // for scroll btn badge
@@ -1326,8 +1314,9 @@ function startChannelListener(){
   onSnapshot(query(collection(fdb,'pulsar_channels'),orderBy('order','asc')),snap=>{
     const chs=[],dms=[];
     snap.forEach(d=>{const ch={id:d.id,...d.data()};if(ch.type==='direct'){if((ch.members||[]).includes(me.uid))dms.push(ch);}else chs.push(ch);});
-    renderChannelList(chs);
-    renderDMListFromChannels(dms);
+    // Обновляем оба массива атомарно — один вызов rebuildChatList, без промежуточного пустого состояния
+    _allChs=chs; _allDmChs=dms; _dmChs=dms;
+    rebuildChatList();
   },e=>console.error('channels:',e));
 }
 
@@ -1342,7 +1331,7 @@ function fmtSbTime(ts){
   return d.toLocaleDateString('ru-RU',{day:'numeric',month:'numeric'});
 }
 
-function makeChCard(ch, o /* null for channels */){
+function makeChCard(ch, o /* null for channels */, oid=null){
   const isDM   = ch.type === 'direct';
   const isActive = currentCh?.id === ch.id;
   const uc     = unreadCounts[ch.id] || 0;
@@ -1354,7 +1343,7 @@ function makeChCard(ch, o /* null for channels */){
   if(isDM && o){
     const pr  = o.presence?.status || 'offline';
     const avI = o.photoURL ? `<img src="${esc(o.photoURL)}" alt=""/>` : esc(ini(o.displayName||o.email));
-    avaHtml = `<div class="ch-ava"><span>${avI}</span><div class="ch-presence ${pr}"></div></div>`;
+    avaHtml = `<div class="ch-ava-wrap"><div class="ch-ava"><span>${avI}</span></div><div class="ch-presence ${pr}"></div></div>`;
   } else {
     const icon = ch.type==='private' ? '🔒' : ch.name?.[0]?.toUpperCase() || '#';
     avaHtml = `<div class="ch-ava ch-ava--ch">${icon}</div>`;
@@ -1380,7 +1369,7 @@ function makeChCard(ch, o /* null for channels */){
 
   const title = isDM ? esc(o?.displayName||o?.email||'—') : esc(ch.name||'');
 
-  return `<div class="ch-card${isActive?' active':''}${uc>0&&!isActive?' has-unread':''}" data-chid="${esc(ch.id)}" role="button" tabindex="0">
+  return `<div class="ch-card${isActive?' active':''}${uc>0&&!isActive?' has-unread':''}" data-chid="${esc(ch.id)}"${oid?` data-uid="${esc(oid)}"`:''} role="button" tabindex="0">
     ${avaHtml}
     <div class="ch-body">
       <div class="ch-row1">
@@ -1396,6 +1385,8 @@ function makeChCard(ch, o /* null for channels */){
 // Все чаты в одном массиве, сортировка по lastMessage.ts
 let _allChs = [], _allDmChs = [];
 let _sbQuery = '';
+
+let _chatListLoaded = false;
 
 function rebuildChatList(){
   const list = $('chat-list');
@@ -1423,21 +1414,55 @@ function rebuildChatList(){
   }) : combined;
 
   if(!filtered.length){
+    // Не показываем пустое состояние пока данные ещё не пришли
+    if(!_chatListLoaded && !q) return;
     list.innerHTML = `<div style="padding:20px 14px;font-size:.74rem;color:var(--muted-2);text-align:center">${q?'Ничего не найдено':'Нет чатов — создайте первый'}</div>`;
     return;
   }
 
+  _chatListLoaded = true;
+
   list.innerHTML = filtered.map(ch=>{
     if(ch.type==='direct'){
       const oid=(ch.members||[]).find(u=>u!==me.uid);
-      return makeChCard(ch, allUsers[oid]||{displayName:'Пользователь'});
+      return makeChCard(ch, allUsers[oid]||{displayName:'Пользователь'}, oid);
     }
     return makeChCard(ch, null);
   }).join('');
 
-  list.querySelectorAll('.ch-card').forEach(el=>
-    el.addEventListener('click',()=>openChannel(el.dataset.chid))
-  );
+  _chatListLoaded = true;
+
+  list.querySelectorAll('.ch-card').forEach(el => {
+    const uid = el.dataset.uid;
+    let lpTimer = null, longPressed = false;
+
+    // Long-press (500ms) — открыть профиль (только для DM)
+    if(uid){
+      el.addEventListener('touchstart', () => {
+        longPressed = false;
+        lpTimer = setTimeout(() => {
+          longPressed = true;
+          lpTimer = null;
+          openUserProfile(uid);
+        }, 500);
+      }, {passive: true});
+
+      el.addEventListener('touchmove', () => {
+        if(lpTimer){ clearTimeout(lpTimer); lpTimer = null; }
+      }, {passive: true});
+
+      el.addEventListener('touchend', e => {
+        if(lpTimer){ clearTimeout(lpTimer); lpTimer = null; }
+        if(longPressed){ e.preventDefault(); longPressed = false; }
+      });
+    }
+
+    // Обычный клик — открыть чат
+    el.addEventListener('click', () => {
+      if(longPressed){ longPressed = false; return; }
+      openChannel(el.dataset.chid);
+    });
+  });
 }
 
 function renderChannelList(chs){ _allChs=chs; rebuildChatList(); }
@@ -1450,17 +1475,29 @@ async function openChannel(chId){
   if(currentCh?.id===chId){$('no-channel').style.display='none';$('conversation').style.display='flex';return;}
   if(msgUnsub){msgUnsub();msgUnsub=null;}
   closeThread();clearTyping();
-  let chData;
-  try{const s=await getDoc(doc(fdb,'pulsar_channels',chId));if(!s.exists()){toast('Канал не найден','err');return;}chData={id:s.id,...s.data()};}
-  catch(e){toast('Ошибка: '+e.message,'err');return;}
-  currentCh=chData;replyTo=null;
+  replyTo=null;
   delete unreadCounts[chId];
   knownMsgIds=new Set();currentMsgs=[];newMsgCount=0;
   updateScrollBtn();
+
+  // ── Сразу открываем чат, без ожидания ──
+  _openingChId=chId;
   $('no-channel').style.display='none';
   $('conversation').style.display='flex';
-  $('search-bar').classList.remove('visible');
-  $('btn-search-toggle').classList.remove('active');
+  $('ch-name').textContent='…';
+  $('ch-desc').textContent='';
+  $('msg-list').innerHTML='<div style="padding:28px;text-align:center;color:var(--muted);font-size:.75rem">Загрузка…</div>';
+  clearReply();cancelUpload();
+  closeSidebar();
+  setTimeout(()=>$('msg-input').focus(),150);
+
+  // ── Грузим данные канала в фоне ──
+  let chData;
+  try{const s=await getDoc(doc(fdb,'pulsar_channels',chId));if(!s.exists()){toast('Канал не найден','err');openSidebar();return;}chData={id:s.id,...s.data()};}
+  catch(e){toast('Ошибка: '+e.message,'err');openSidebar();return;}
+  // Если пользователь уже открыл другой чат пока грузилось — выходим
+  if(_openingChId!==chId) return;
+  currentCh=chData;
   if(chData.type==='direct'){
     const oid=(chData.members||[]).find(u=>u!==me.uid),o=allUsers[oid]||{};
     $('ch-icon').textContent='@';$('ch-name').textContent=o.displayName||o.email||'DM';$('ch-desc').textContent='';
@@ -1469,12 +1506,9 @@ async function openChannel(chId){
     $('ch-name').textContent=chData.name||'';$('ch-desc').textContent=chData.description||'';
   }
   document.querySelectorAll('.ch-card').forEach(el=>el.classList.toggle('active',el.dataset.chid===chId));
-  clearReply();cancelUpload();
   loadPinnedMsgs(chId);
   startMessageListener(chId);
   startTypingListener(chId);
-  closeSidebar();
-  setTimeout(()=>$('msg-input').focus(),150);
 }
 
 /* ── MESSAGE LISTENER (incremental) ── */
@@ -1638,10 +1672,7 @@ function makeDateDiv(ts){
 }
 
 function makeAvHtml(msg, grouped){
-  const user = allUsers[msg.authorId] || {};
-  const avImg = user.photoURL ? `<img src="${esc(user.photoURL)}" alt=""/>` : '';
-  if(grouped) return `<div class="msg-av ghost"></div>`;
-  return `<div class="msg-av" data-uid="${esc(msg.authorId)}">${avImg||esc(ini(msg.authorName))}</div>`;
+  return ''; // аватарки в чате не показываются
 }
 
 function makeAttachHtml(msg){
@@ -1935,10 +1966,9 @@ async function sendThreadReply(){
 function doSearch(q){
   document.querySelectorAll('.msg-group').forEach(g=>g.classList.remove('search-hl','search-cur'));
   searchResults=[];searchIdx=0;
-  if(!q.trim()){$('search-results-count').textContent='';updateSearchNav();return;}
+  if(!q.trim()){updateSearchNav();return;}
   const ql=q.toLowerCase();
   searchResults=currentMsgs.filter(m=>!m.deleted&&(m.text||'').toLowerCase().includes(ql));
-  $('search-results-count').textContent=searchResults.length?`${searchResults.length} совп.`:'Не найдено';
   applySearchHL();
   if(searchResults.length){searchIdx=0;scrollToSearch();}
   updateSearchNav();
@@ -1948,7 +1978,11 @@ function applySearchHL(){
   searchResults.forEach((m,i)=>{const g=document.querySelector(`.msg-group[data-msgid="${m.id}"]`);if(g){g.classList.add('search-hl');if(i===searchIdx)g.classList.add('search-cur');}});
 }
 function scrollToSearch(){if(!searchResults[searchIdx])return;const g=document.querySelector(`.msg-group[data-msgid="${searchResults[searchIdx].id}"]`);if(g)g.scrollIntoView({behavior:'smooth',block:'center'});applySearchHL();}
-function updateSearchNav(){$('search-prev').disabled=searchIdx<=0;$('search-next').disabled=searchIdx>=searchResults.length-1;}
+function updateSearchNav(){
+  const prev=$('search-prev'),next=$('search-next');
+  if(prev)prev.disabled=searchIdx<=0;
+  if(next)next.disabled=searchIdx>=searchResults.length-1;
+}
 
 /* ── LIGHTBOX ── */
 function openLightbox(url){$('lightbox-img').src=url;$('lightbox-dl').href=url;$('lightbox').classList.add('open');}
@@ -2254,10 +2288,7 @@ function initUI(){
   $('reply-close').addEventListener('click',clearReply);
 
   // Emoji
-  const picker=$('emoji-picker');
-  picker.innerHTML=EMOJIS.map(e=>`<div class="ep-emoji" data-emoji="${e}">${e}</div>`).join('');
-  picker.querySelectorAll('.ep-emoji').forEach(el=>el.addEventListener('click',()=>{input.value+=el.dataset.emoji;input.focus();$('btn-send').disabled=!input.value.trim()&&!pendingFile;picker.classList.remove('open');ar(input);}));
-  $('emoji-toggle').addEventListener('click',e=>{e.stopPropagation();picker.classList.toggle('open');});
+  // emoji-picker удалён из UI
   document.addEventListener('click',e=>{if(!picker.contains(e.target)&&e.target!==$('emoji-toggle'))picker.classList.remove('open');});
 
   // File
@@ -2330,50 +2361,26 @@ function initUI(){
   $('btn-new-channel')?.addEventListener('click', () => { $('ch-create-err').style.display='none'; openModal('modal-channel'); setTimeout(()=>$('ch-new-name').focus(),100); });
 
   // Search
-  $('btn-search-toggle').addEventListener('click',()=>{
-    const bar=$('search-bar'),active=bar.classList.toggle('visible');
-    $('btn-search-toggle').classList.toggle('active',active);
-    if(active)setTimeout(()=>$('search-input-ch').focus(),80);else{doSearch('');$('search-input-ch').value='';}
+  // Гамбургер топбара → профиль собеседника (DM) или участники (канал)
+  $('btn-chat-menu')?.addEventListener('click', () => {
+    if (!currentCh) return;
+    if (currentCh.type === 'direct') {
+      const oid = (currentCh.members || []).find(u => u !== me.uid);
+      if (oid) openUserProfile(oid);
+    } else {
+      openModal('modal-members');
+    }
   });
-  let sd;
-  $('search-input-ch').addEventListener('input',e=>{clearTimeout(sd);sd=setTimeout(()=>doSearch(e.target.value),220);});
-  $('search-input-ch').addEventListener('keydown',e=>{if(e.key==='Escape')$('btn-search-toggle').click();});
-  $('search-close').addEventListener('click',()=>$('btn-search-toggle').click());
-  $('search-prev').addEventListener('click',()=>{if(searchIdx>0){searchIdx--;scrollToSearch();updateSearchNav();}});
-  $('search-next').addEventListener('click',()=>{if(searchIdx<searchResults.length-1){searchIdx++;scrollToSearch();updateSearchNav();}});
 
   // Pinned
-  $('btn-pinned').addEventListener('click',()=>{
-    if(!currentCh)return;
-    const pl=$('pinned-list');
-    if(!pinnedMsgs.length){pl.innerHTML='<div style="color:var(--muted);font-size:.75rem;text-align:center;padding:16px">Нет закреплённых сообщений</div>';openModal('modal-pinned');return;}
-    pl.innerHTML=pinnedMsgs.map(m=>`<div class="pinned-item" data-msgid="${esc(m.id)}"><div class="pinned-item-author">${esc(m.authorName)}<button class="pinned-unpin" data-msgid="${esc(m.id)}">Открепить</button></div><div class="pinned-item-text">${esc(m.text||'[Вложение]')}</div><div class="pinned-item-time">${fmtT(m.ts||{toDate:()=>new Date(m.clientTs)})}</div></div>`).join('');
-    pl.querySelectorAll('.pinned-item').forEach(el=>el.addEventListener('click',e=>{if(!e.target.classList.contains('pinned-unpin')){closeModal('modal-pinned');document.querySelector(`[data-msgid="${el.dataset.msgid}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});}}));
-    pl.querySelectorAll('.pinned-unpin').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();pinMessage(b.dataset.msgid,true);closeModal('modal-pinned');}));
-    openModal('modal-pinned');
+  $('pinned-bar').addEventListener('click', () => {
+    if (!currentCh) return;
+    const oid = currentCh.type === 'direct' ? (currentCh.members || []).find(u => u !== me.uid) : null;
+    if (oid) openUserProfile(oid); else openModal('modal-members');
   });
-  $('pinned-bar').addEventListener('click',e=>{if(!e.target.closest('#pinned-bar-close'))$('btn-pinned').click();});
   $('pinned-bar-close').addEventListener('click',e=>{e.stopPropagation();$('pinned-bar').classList.remove('visible');});
 
-  // Members
-  $('btn-members').addEventListener('click',()=>{
-    if(!currentCh)return;
-    const body=$('modal-members-body'),users=Object.values(allUsers);
-    body.innerHTML=users.length?users.map(u=>{
-      const pr=u.presence?.status||'offline';
-      const avI=u.photoURL?`<img src="${esc(u.photoURL)}" alt="" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:inherit"/>`:ini(u.displayName||u.email);
-      return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer" data-uid="${esc(u.uid)}">
-        <div class="dm-avatar" style="width:30px;height:30px;border-radius:8px;flex-shrink:0;overflow:hidden">${avI}<div class="presence-dot ${pr}"></div></div>
-        <div><div style="font-size:.76rem;font-weight:500">${esc(u.displayName||u.email||'—')}</div><div style="font-size:.62rem;color:var(--muted)">${esc(u.role||'user')} · ${pr==='online'?'<span style="color:var(--green)">В сети</span>':'Не в сети'}</div></div>
-      </div>`;
-    }).join(''):'<div style="color:var(--muted);font-size:.75rem;padding:8px 0">Нет пользователей</div>';
-    body.querySelectorAll('[data-uid]').forEach(el=>{
-      el.addEventListener('mouseenter',()=>el.style.background='var(--surface-2)');
-      el.addEventListener('mouseleave',()=>el.style.background='');
-      el.addEventListener('click',()=>{closeModal('modal-members');openUserProfile(el.dataset.uid);});
-    });
-    openModal('modal-members');
-  });
+
 
   // ── Profile Sheet ────────────────────────────────────────────
   Sheet.define({
