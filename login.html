@@ -516,18 +516,44 @@
 
   /* ══ КОНФИГ FIREBASE ══════════════════════════════════════ */
   const firebaseConfig = {
-    apiKey:            'AIzaSyC4PKkma67vVXeZvlSv0MNRK5cQvcAvjpg',
-    authDomain:        'admingalelium.firebaseapp.com',
-    projectId:         'admingalelium',
-    storageBucket:     'admingalelium.firebasestorage.app',
-    messagingSenderId: '565330048254',
-    appId:             '1:565330048254:web:bab36aae480989e2bfe1af',
-    measurementId:     'G-8FRC70X54D'
+    apiKey:            'AIzaSyDCtMunMRiOWKSGh939BEU2TvhEgv_wB60',
+    authDomain:        'pulsar-galelium.firebaseapp.com',
+    databaseURL:       'https://pulsar-galelium-default-rtdb.firebaseio.com',
+    projectId:         'pulsar-galelium',
+    storageBucket:     'pulsar-galelium.firebasestorage.app',
+    messagingSenderId: '407132877855',
+    appId:             '1:407132877855:web:fd29af874d74dcda90912a'
   };
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
+
+  /* ══ FIRESTORE — СХЕМА БАЗЫ ДАННЫХ ════════════════════════
+   *
+   *  users/{uid}                   ← профили пользователей
+   *    ├─ uid            string     Firebase Auth UID
+   *    ├─ email          string
+   *    ├─ displayName    string     имя и фамилия
+   *    ├─ phone          string     необязательно
+   *    ├─ photoURL       string
+   *    ├─ role           string     'user' | 'admin' | 'moderator'
+   *    ├─ status         string     'active' | 'banned'
+   *    ├─ provider       string     'email' | 'google'
+   *    ├─ createdAt      Timestamp
+   *    ├─ updatedAt      Timestamp
+   *    ├─ lastLoginAt    Timestamp
+   *    ├─ verifiedByAdmin boolean
+   *    └─ notes          string     заметки администратора
+   *
+   *  pulsar_channels/{channelId}   ← каналы и личные переписки
+   *  pulsar_channels/{id}/messages/{messageId}  ← сообщения
+   *  pulsar_channels/{id}/messages/{id}/thread/{id}  ← треды
+   *  pulsar_presence/{uid}         ← онлайн-статус (real-time)
+   *  pulsar_typing/{chId_uid}      ← индикатор набора текста
+   *
+   *  → Полная схема описана в pulsar.html
+   * ══════════════════════════════════════════════════════════ */
 
   /* ══ РЕДИРЕКТ ПОСЛЕ ВХОДА — PULSAR ═══════════════════════ */
   const PULSAR_HOME = 'pulsar.html';

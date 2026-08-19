@@ -107,12 +107,13 @@ a{color:inherit;text-decoration:none}
 }
 
 /* ── SHELL ── */
-#shell{display:none;height:100svh;grid-template-columns:var(--sb-w) 1fr;grid-template-areas:"sidebar main"}
+#shell{display:none;height:100svh;grid-template-columns:1fr;grid-template-areas:"main"}
 #shell.active{display:grid}
-#shell.thread-open{grid-template-columns:var(--sb-w) 1fr var(--thread-w);grid-template-areas:"sidebar main thread"}
+#shell.thread-open{grid-template-columns:1fr var(--thread-w);grid-template-areas:"main thread"}
 
 /* ── SIDEBAR ── */
 #sidebar{
+  display:none!important;
   grid-area:sidebar;background:var(--surface);
   border-right:1px solid var(--border);
   display:flex;flex-direction:column;overflow:hidden;
@@ -882,7 +883,7 @@ a{color:inherit;text-decoration:none}
 #toast.ok .toast-dot{background:var(--green)}#toast.err .toast-dot{background:var(--red)}
 
 /* No channel */
-#no-channel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px;text-align:center}
+#no-channel{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--surface)}
 .nc-icon{width:68px;height:68px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.2)}
 .nc-title{font-family:var(--font-display);font-weight:800;font-size:1.4rem}
 .nc-sub{font-size:.76rem;color:var(--muted);max-width:260px;line-height:1.65}
@@ -932,6 +933,11 @@ a{color:inherit;text-decoration:none}
   .auth-logo-pixel{animation:none}
   .msg-group.new-msg{animation:none}
 }
+
+/* ── TOPBAR BACK BUTTON ── */
+.topbar-back-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);color:var(--muted);transition:background var(--tf),color var(--tf);flex-shrink:0}
+.topbar-back-btn:hover{background:var(--surface-2);color:var(--text)}
+.topbar-mob-menu{display:none!important}
 </style>
 </head>
 <body>
@@ -975,77 +981,66 @@ a{color:inherit;text-decoration:none}
 </div>
 
 <div id="shell">
-  <!-- Sidebar -->
-  <aside id="sidebar">
-    <!-- Шапка -->
-    <div class="sb-head">
-      <div class="sb-head-top">
-        <div class="sb-app-name">PULSAR</div>
-        <div class="sb-head-actions">
-          <!-- Новый чат/канал -->
-          <button class="sb-action-btn" id="btn-compose" title="Написать">
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 3h5a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M6 10H4V8l5.5-5.5a1.4 1.4 0 012 2L6 10z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <!-- Профиль -->
-          <button class="sb-action-btn" id="btn-my-profile" title="Профиль">
-            <div class="user-avatar" id="my-avatar" style="width:26px;height:26px;font-size:.66rem;border-radius:7px">?</div>
-          </button>
-        </div>
-      </div>
-      <!-- Поиск -->
-      <div class="sb-search">
-        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        <input id="sb-search-input" placeholder="Поиск" autocomplete="off" spellcheck="false"/>
-      </div>
-    </div>
-
-    <!-- Единый список чатов -->
-    <div class="sb-chat-list" id="chat-list">
-      <!-- Skeleton пока грузится -->
-      <div id="chat-list-skeleton">
-        ${[52,38,62,45,55].map(w=>`<div class="ch-card-sk">
-          <div class="sk-circle"></div>
-          <div class="sk-lines">
-            <div class="sk-line" style="width:${w}%"></div>
-            <div class="sk-line" style="width:${w*0.7|0}%"></div>
-          </div>
-        </div>`).join('')}
-      </div>
-    </div>
-
-    <!-- Нижняя панель пользователя -->
-    <div class="user-panel">
-      <div class="user-info">
-        <div class="user-name" id="my-name">—</div>
-        <div class="user-status">
-          <div class="user-status-dot" id="my-status-dot"></div>
-          <span id="my-status-label">В сети</span>
-        </div>
-      </div>
-      <div class="user-actions">
-        <button class="icon-btn" id="btn-mute" title="Уведомления">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5H2a1 1 0 00-1 1v2a1 1 0 001 1h2l3 3V2L4 5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M11 5c.8.8 1 1.5 1 2s-.2 1.2-1 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-        </button>
-        <button class="icon-btn" id="btn-logout" title="Выход">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.5 4.5L12 7l-2.5 2.5M12 7H5.5M7 2H3a1 1 0 00-1 1v8a1 1 0 001 1h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
-    </div>
-  </aside>
-
   <!-- Main -->
   <div id="main">
     <div id="no-channel">
-      <div class="nc-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="rgba(200,169,110,.4)" stroke-width="1.5"/><path d="M14 9v5l3 2" stroke="rgba(200,169,110,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="nc-title">Pulsar</div>
-      <div class="nc-sub">Выберите канал или начните личную переписку</div>
-      <button class="nc-mob-btn" id="nc-open-sidebar"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3h10M2 7h10M2 11h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> Открыть меню</button>
+      <!-- Шапка чат-листа -->
+      <div class="sb-head">
+        <div class="sb-head-top">
+          <div class="sb-logo">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" fill="#08080d"/><path d="M3.5 7l2 2L10.5 4.5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="sb-app-name" style="flex:1">PULSAR</div>
+          <div class="sb-head-actions">
+            <button class="sb-action-btn" id="btn-compose" title="Написать">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 3h5a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M6 10H4V8l5.5-5.5a1.4 1.4 0 012 2L6 10z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="sb-action-btn" id="btn-my-profile" title="Профиль">
+              <div class="user-avatar" id="my-avatar" style="width:26px;height:26px;font-size:.66rem;border-radius:7px">?</div>
+            </button>
+          </div>
+        </div>
+        <div class="sb-search">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <input id="sb-search-input" placeholder="Поиск" autocomplete="off" spellcheck="false"/>
+        </div>
+      </div>
+
+      <!-- Список чатов -->
+      <div class="sb-chat-list" id="chat-list">
+        <div id="chat-list-skeleton">
+          <div class="ch-card-sk"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:52%"></div><div class="sk-line" style="width:36%"></div></div></div>
+          <div class="ch-card-sk"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:38%"></div><div class="sk-line" style="width:26%"></div></div></div>
+          <div class="ch-card-sk"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:62%"></div><div class="sk-line" style="width:43%"></div></div></div>
+          <div class="ch-card-sk"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:45%"></div><div class="sk-line" style="width:31%"></div></div></div>
+          <div class="ch-card-sk"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:55%"></div><div class="sk-line" style="width:38%"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Нижняя панель пользователя -->
+      <div class="user-panel">
+        <div class="user-info">
+          <div class="user-name" id="my-name">—</div>
+          <div class="user-status">
+            <div class="user-status-dot" id="my-status-dot"></div>
+            <span id="my-status-label">В сети</span>
+          </div>
+        </div>
+        <div class="user-actions">
+          <button class="icon-btn" id="btn-mute" title="Уведомления">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5H2a1 1 0 00-1 1v2a1 1 0 001 1h2l3 3V2L4 5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M11 5c.8.8 1 1.5 1 2s-.2 1.2-1 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-logout" title="Выход">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.5 4.5L12 7l-2.5 2.5M12 7H5.5M7 2H3a1 1 0 00-1 1v8a1 1 0 001 1h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
     </div>
 
     <div id="conversation" style="display:none;flex-direction:column;flex:1;overflow:hidden;position:relative">
       <!-- Topbar -->
       <div class="topbar">
-        <button class="topbar-mob-menu" id="mob-menu-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+        <button class="topbar-back-btn" id="btn-back-to-chats" title="Назад к чатам"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 4L5 8l5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="topbar-name">
           <span class="topbar-hash" id="ch-icon">#</span>
           <span class="topbar-ch-name" id="ch-name">—</span>
@@ -1317,10 +1312,104 @@ import {
   getStorage, ref as sRef, uploadBytesResumable, getDownloadURL
 } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-storage.js';
 
-const app     = initializeApp({ apiKey:'AIzaSyC4PKkma67vVXeZvlSv0MNRK5cQvcAvjpg', authDomain:'admingalelium.firebaseapp.com', projectId:'admingalelium', storageBucket:'admingalelium.firebasestorage.app', messagingSenderId:'565330048254', appId:'1:565330048254:web:bab36aae480989e2bfe1af' });
+/* ════════════════════════════════════════════════════════════════
+ *  FIREBASE CONFIG
+ * ════════════════════════════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey:            'AIzaSyDCtMunMRiOWKSGh939BEU2TvhEgv_wB60',
+  authDomain:        'pulsar-galelium.firebaseapp.com',
+  databaseURL:       'https://pulsar-galelium-default-rtdb.firebaseio.com',
+  projectId:         'pulsar-galelium',
+  storageBucket:     'pulsar-galelium.firebasestorage.app',
+  messagingSenderId: '407132877855',
+  appId:             '1:407132877855:web:fd29af874d74dcda90912a'
+};
+
+const app     = initializeApp(firebaseConfig);
 const auth    = getAuth(app);
 const fdb     = getFirestore(app);
 const storage = getStorage(app);
+
+/* ════════════════════════════════════════════════════════════════
+ *  FIRESTORE — СХЕМА БАЗЫ ДАННЫХ  (pulsar-galelium)
+ * ════════════════════════════════════════════════════════════════
+ *
+ *  ┌─ users/{uid}
+ *  │    Профили всех зарегистрированных пользователей.
+ *  │    Создаётся при регистрации (login.html → ensureUserProfile).
+ *  │    ├─ uid            string      Firebase Auth UID
+ *  │    ├─ email          string
+ *  │    ├─ displayName    string      имя и фамилия
+ *  │    ├─ phone          string      необязательно
+ *  │    ├─ photoURL       string      URL аватара
+ *  │    ├─ bio            string      строка «о себе»
+ *  │    ├─ role           string      'user' | 'admin' | 'moderator'
+ *  │    ├─ status         string      'active' | 'banned'
+ *  │    ├─ provider       string      'email' | 'google'
+ *  │    ├─ createdAt      Timestamp
+ *  │    ├─ updatedAt      Timestamp
+ *  │    ├─ lastLoginAt    Timestamp
+ *  │    ├─ verifiedByAdmin boolean
+ *  │    └─ notes          string      заметки администратора
+ *  │
+ *  ├─ pulsar_channels/{channelId}
+ *  │    Публичные, приватные каналы и личные переписки (DM).
+ *  │    ├─ name           string      название канала (не для DM)
+ *  │    ├─ description    string
+ *  │    ├─ type           string      'public' | 'private' | 'direct'
+ *  │    ├─ members        string[]    uid участников (обязателен для DM)
+ *  │    ├─ createdBy      string      uid создателя
+ *  │    ├─ createdAt      Timestamp
+ *  │    ├─ order          number      порядок в сайдбаре (asc)
+ *  │    └─ lastMessage    object      { text, authorName, ts }
+ *  │
+ *  │    └── messages/{messageId}
+ *  │          Сообщения внутри канала.
+ *  │          ├─ text            string
+ *  │          ├─ authorId        string      uid
+ *  │          ├─ authorName      string
+ *  │          ├─ ts              Timestamp   серверное время записи
+ *  │          ├─ clientTs        number      Date.now() — для сортировки
+ *  │          ├─ edited          boolean
+ *  │          ├─ editedAt        Timestamp
+ *  │          ├─ deleted         boolean     soft-delete (текст стирается)
+ *  │          ├─ pinned          boolean
+ *  │          ├─ replyTo         object      { id, text, authorName }
+ *  │          ├─ attachmentURL   string
+ *  │          ├─ attachmentType  string      'image' | 'file'
+ *  │          ├─ attachmentName  string
+ *  │          ├─ attachmentSize  number      байт
+ *  │          ├─ reactions       object      { '👍': [uid, ...], '❤️': [...] }
+ *  │          └─ threadCount     number
+ *  │
+ *  │          └── thread/{threadMessageId}
+ *  │                Ответы в треде (тред привязан к одному сообщению).
+ *  │                ├─ text        string
+ *  │                ├─ authorId    string
+ *  │                ├─ authorName  string
+ *  │                ├─ ts          Timestamp
+ *  │                └─ clientTs    number
+ *  │
+ *  ├─ pulsar_presence/{uid}
+ *  │    Онлайн-статус пользователей (обновляется в реальном времени).
+ *  │    Документ перезаписывается при каждом изменении статуса.
+ *  │    ├─ uid          string
+ *  │    ├─ displayName  string
+ *  │    ├─ email        string
+ *  │    ├─ photoURL     string
+ *  │    ├─ status       string   'online' | 'away' | 'offline'
+ *  │    └─ updatedAt    Timestamp
+ *  │
+ *  └─ pulsar_typing/{channelId_uid}
+ *       Индикатор набора текста (ephemeral).
+ *       Ключ документа = `${chId}_${uid}` для уникальности.
+ *       Устаревает через 5 сек (проверяется на клиенте).
+ *       ├─ uid    string
+ *       ├─ name   string
+ *       ├─ chId   string
+ *       └─ ts     Timestamp | null   null = пользователь перестал печатать
+ *
+ * ════════════════════════════════════════════════════════════════ */
 
 /* ── STATE ── */
 let me=null, currentCh=null, msgUnsub=null, replyTo=null, editingId=null;
@@ -1631,7 +1720,7 @@ function renderDMList(){ rebuildChatList(); }
 
 /* ── OPEN CHANNEL ── */
 async function openChannel(chId){
-  if(currentCh?.id===chId){closeSidebar();return;}
+  if(currentCh?.id===chId){$('no-channel').style.display='none';$('conversation').style.display='flex';return;}
   if(msgUnsub){msgUnsub();msgUnsub=null;}
   closeThread();clearTyping();
   let chData;
@@ -2325,8 +2414,8 @@ function renderDMUserSearch(q){
 /* ── MODAL / SIDEBAR ── */
 function openModal(id){$(id)?.classList.add('open');}
 function closeModal(id){$(id)?.classList.remove('open');}
-function openSidebar(){$('sidebar').classList.add('open');$('mob-overlay').classList.add('open');}
-function closeSidebar(){$('sidebar').classList.remove('open');$('mob-overlay').classList.remove('open');}
+function openSidebar(){$('no-channel').style.display='flex';$('conversation').style.display='none';}
+function closeSidebar(){}
 
 /* ── INIT UI ── */
 function initUI(){
@@ -2506,13 +2595,11 @@ function initUI(){
   // Reset title on focus
   window.addEventListener('focus',()=>{document.title='Pulsar — Galelium';});
 
-  // Mobile
-  $('mob-menu-btn').addEventListener('click',openSidebar);
-  $('mob-overlay').addEventListener('click',closeSidebar);
-  $('nc-open-sidebar').addEventListener('click',openSidebar);
-  $('mob-btn-channels').addEventListener('click',()=>{ document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active')); $('mob-btn-channels').classList.add('active'); _sbQuery=''; $('sb-search-input').value=''; rebuildChatList(); openSidebar(); });
-  $('mob-btn-dms').addEventListener('click',()=>{ document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active')); $('mob-btn-dms').classList.add('active'); openSidebar(); });
-  $('mob-btn-new').addEventListener('click',()=>{ $('ch-create-err').style.display='none'; openModal('modal-channel'); setTimeout(()=>$('ch-new-name').focus(),100); });
+  // Navigation
+  $('btn-back-to-chats').addEventListener('click',()=>{ openSidebar(); });
+  $('mob-btn-channels')?.addEventListener('click',()=>{ document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active')); $('mob-btn-channels').classList.add('active'); _sbQuery=''; $('sb-search-input').value=''; rebuildChatList(); openSidebar(); });
+  $('mob-btn-dms')?.addEventListener('click',()=>{ document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active')); $('mob-btn-dms').classList.add('active'); openSidebar(); });
+  $('mob-btn-new')?.addEventListener('click',()=>{ $('ch-create-err').style.display='none'; openModal('modal-channel'); setTimeout(()=>$('ch-new-name').focus(),100); });
 
   // Logout
   $('btn-logout').addEventListener('click',async()=>{if(!confirm('Выйти из Pulsar?'))return;await updatePresence('offline');clearTyping();await signOut(auth);location.replace('login.html');});
