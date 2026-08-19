@@ -502,32 +502,16 @@
 
 <!-- Firebase SDK -->
 <script type="module">
-  import { initializeApp }
-    from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js';
   import {
-    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword,
     signInWithPopup, GoogleAuthProvider, onAuthStateChanged,
     sendPasswordResetEmail, updateProfile,
     setPersistence, browserLocalPersistence, browserSessionPersistence
   } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js';
   import {
-    getFirestore, doc, getDoc, setDoc, serverTimestamp
+    doc, getDoc, setDoc, serverTimestamp
   } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js';
-
-  /* ══ КОНФИГ FIREBASE ══════════════════════════════════════ */
-  const firebaseConfig = {
-    apiKey:            'AIzaSyDCtMunMRiOWKSGh939BEU2TvhEgv_wB60',
-    authDomain:        'pulsar-galelium.firebaseapp.com',
-    databaseURL:       'https://pulsar-galelium-default-rtdb.firebaseio.com',
-    projectId:         'pulsar-galelium',
-    storageBucket:     'pulsar-galelium.firebasestorage.app',
-    messagingSenderId: '407132877855',
-    appId:             '1:407132877855:web:fd29af874d74dcda90912a'
-  };
-
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+  import { auth, db } from './firebase.js';
 
   /* ══ FIRESTORE — СХЕМА БАЗЫ ДАННЫХ ════════════════════════
    *
