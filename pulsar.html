@@ -539,15 +539,7 @@ a{color:inherit;text-decoration:none}
 .btn-primary{background:var(--accent);color:#08080d;font-weight:700}.btn-primary:hover:not(:disabled){opacity:.87}.btn-primary:disabled{opacity:.5;cursor:not-allowed}
 .btn-danger{background:rgba(208,96,112,.12);color:var(--red);border:1px solid rgba(208,96,112,.2)}.btn-danger:hover{background:rgba(208,96,112,.2)}
 
-/* Profile */
-/* ── PROFILE MODAL ── */
-#modal-profile .modal{
-  width:min(460px,calc(100vw - 20px));
-  overflow:hidden;padding:0;
-  border-radius:12px;
-}
-#modal-profile .modal::before{display:none}
-#modal-profile .modal-head,#modal-profile .modal-body{display:none}
+/* ── PROFILE SHEET ── */
 
 /* Баннер */
 .prof-banner{
@@ -762,12 +754,8 @@ a{color:inherit;text-decoration:none}
   padding:14px 22px;border-top:1px solid var(--border);
 }
 
-/* Прокручиваемая область профиля */
-.prof-scroll{
-  overflow-y:auto;
-  max-height:calc(90svh - 110px);
-}
-
+/* Прокручиваемая область профиля (в sheet — bs-body уже scrollable) */
+.prof-scroll{ display:contents; }
 
 /* Pinned */
 .pinned-list{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow-y:auto}
@@ -1046,128 +1034,6 @@ a{color:inherit;text-decoration:none}
     <button class="modal-close" data-modal="modal-members"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
     <div class="modal-head"><div class="modal-title">Участники</div></div>
     <div class="modal-body" id="modal-members-body" style="max-height:380px;overflow-y:auto"></div>
-  </div>
-</div>
-<div class="modal-overlay" id="modal-profile">
-  <div class="modal" style="padding:0">
-
-    <!-- Баннер + аватар -->
-    <div class="prof-banner">
-      <div class="prof-banner-inner">
-        <div class="prof-banner-dots"></div>
-      </div>
-      <button class="prof-close-btn" data-modal="modal-profile">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </button>
-      <div class="prof-av-wrap" id="prof-av-wrap">
-        <div class="prof-av-inner" id="profile-av-big">?</div>
-        <div class="prof-av-status offline" id="prof-av-status"></div>
-      </div>
-    </div>
-
-    <!-- Прокручиваемая область -->
-    <div class="prof-scroll">
-
-      <!-- Имя, email, роль -->
-      <div class="prof-body">
-        <div class="prof-name-row">
-          <div class="prof-name" id="profile-display-name">—</div>
-          <span class="prof-role-badge user" id="prof-role-badge">участник</span>
-        </div>
-        <div class="prof-username" id="profile-email-label">—</div>
-      </div>
-
-      <!-- Действия для чужого профиля -->
-      <div class="prof-actions" id="prof-other-actions" style="display:none">
-        <button class="prof-action-btn primary" id="prof-btn-dm">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M1 8V3a2 2 0 012-2h8a2 2 0 012 2v5a2 2 0 01-2 2H9l-3 2v-2H3a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
-          Написать
-        </button>
-        <button class="prof-action-btn ghost" id="prof-btn-mention">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9 7a2 2 0 11-4 0 2 2 0 014 0z" stroke="currentColor" stroke-width="1.2"/><path d="M11 7a4 4 0 10-1.5 3.1M11 7v2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-          Упомянуть
-        </button>
-      </div>
-
-      <!-- Карточка: статы + био + статус + редактирование -->
-      <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px">
-
-        <!-- Статы -->
-        <div class="prof-card">
-          <div class="prof-stats">
-            <div class="prof-stat">
-              <div class="prof-stat-num" id="stat-msgs">—</div>
-              <div class="prof-stat-label">Сообщений</div>
-            </div>
-            <div class="prof-stat">
-              <div class="prof-stat-num" id="stat-joined">—</div>
-              <div class="prof-stat-label">С нами</div>
-            </div>
-            <div class="prof-stat">
-              <div class="prof-stat-num" id="stat-channels">—</div>
-              <div class="prof-stat-label">Каналов</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- О себе -->
-        <div class="prof-card">
-          <div class="prof-card-section">
-            <div class="prof-section-title">О себе</div>
-            <div class="prof-bio empty" id="prof-bio-view">Нет информации</div>
-          </div>
-        </div>
-
-        <!-- Статус (только свой) -->
-        <div class="prof-card" id="profile-status-row">
-          <div class="prof-card-section">
-            <div class="prof-section-title">Статус</div>
-            <div class="prof-status-btns">
-              <button class="prof-status-btn online"  data-s="online"><span class="prof-sdot"></span>В сети</button>
-              <button class="prof-status-btn away"    data-s="away"><span class="prof-sdot"></span>Отошёл</button>
-              <button class="prof-status-btn offline" data-s="offline"><span class="prof-sdot"></span>Не беспокоить</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Редактирование (только свой) -->
-        <div class="prof-card" id="profile-edit-section">
-          <div class="prof-card-section">
-            <div class="prof-section-title">Редактировать профиль</div>
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div class="prof-field">
-                <label>Отображаемое имя</label>
-                <input id="profile-name-input" placeholder="Ваше имя" autocomplete="off"/>
-              </div>
-              <div class="prof-field">
-                <label>О себе</label>
-                <textarea id="profile-bio-input" placeholder="Расскажите о себе…" rows="3"></textarea>
-              </div>
-              <div class="prof-field">
-                <label>Аватар (URL изображения)</label>
-                <input id="profile-avatar-url" placeholder="https://…" type="url"/>
-                <div class="prof-av-preview-row" id="prof-av-preview-row">
-                  <img class="prof-av-preview-img" id="prof-av-preview" src="" alt=""/>
-                  <span class="prof-av-preview-label">Предпросмотр</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /cards -->
-
-      <!-- Footer -->
-      <div class="prof-foot" id="profile-foot">
-        <button class="btn btn-ghost" id="btn-logout" style="margin-right:auto;color:var(--muted);font-size:.72rem" title="Выйти из аккаунта">
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="margin-right:5px"><path d="M9.5 4.5L12 7l-2.5 2.5M12 7H5.5M7 2H3a1 1 0 00-1 1v8a1 1 0 001 1h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Выйти
-        </button>
-        <button class="btn btn-ghost" data-modal="modal-profile">Отмена</button>
-        <button class="btn btn-primary" id="btn-save-profile">Сохранить</button>
-      </div>
-
-    </div><!-- /prof-scroll -->
   </div>
 </div>
 <div class="modal-overlay" id="modal-pinned">
@@ -2176,7 +2042,8 @@ async function openMyProfile(){
   $('profile-edit-section').style.display = '';
   $('profile-foot').style.display         = '';
   $('prof-other-actions').style.display   = 'none';
-  openModal('modal-profile');
+  Sheet.setTitle('profile', 'Мой профиль');
+  Sheet.open('profile');
 }
 
 async function openUserProfile(uid){
@@ -2190,15 +2057,16 @@ async function openUserProfile(uid){
   $('prof-other-actions').style.display   = 'flex';
 
   // Кнопка "Написать"
-  $('prof-btn-dm').onclick = ()=>{ closeModal('modal-profile'); openOrCreateDM(uid); };
+  $('prof-btn-dm').onclick = ()=>{ Sheet.close('profile'); openOrCreateDM(uid); };
   // Кнопка "Упомянуть"
   $('prof-btn-mention').onclick = ()=>{
-    closeModal('modal-profile');
+    Sheet.close('profile');
     const inp = $('msg-input');
     inp.value += `@${u.displayName} `;
     inp.focus();
   };
-  openModal('modal-profile');
+  Sheet.setTitle('profile', u.displayName || 'Профиль');
+  Sheet.open('profile');
 }
 
 function updateProfAvPreview(url){
@@ -2220,7 +2088,7 @@ async function saveProfile(){
     me.displayName=name; me.bio=bio; me.photoURL=photoURL;
     $('my-name').textContent=name; updateMyAvatarUI();
     await updatePresence(me.presence?.status||'online');
-    closeModal('modal-profile'); toast('Профиль обновлён ✓','ok');
+    Sheet.close('profile'); toast('Профиль обновлён ✓','ok');
   }catch(e){ toast('Ошибка: '+e.message,'err'); }
   btn.textContent='Сохранить'; btn.disabled=false;
 }
@@ -2507,11 +2375,130 @@ function initUI(){
     openModal('modal-members');
   });
 
-  // Profile
+  // ── Profile Sheet ────────────────────────────────────────────
+  Sheet.define({
+    id:     'profile',
+    title:  'Профиль',
+    zIndex: 800,
+  });
+
+  Sheet.body('profile').innerHTML = `
+    <!-- Баннер + аватар -->
+    <div class="prof-banner" style="flex-shrink:0">
+      <div class="prof-banner-inner"><div class="prof-banner-dots"></div></div>
+      <div class="prof-av-wrap" id="prof-av-wrap">
+        <div class="prof-av-inner" id="profile-av-big">?</div>
+        <div class="prof-av-status offline" id="prof-av-status"></div>
+      </div>
+    </div>
+
+    <!-- Имя, email, роль -->
+    <div class="prof-body">
+      <div class="prof-name-row">
+        <div class="prof-name" id="profile-display-name">—</div>
+        <span class="prof-role-badge user" id="prof-role-badge">участник</span>
+      </div>
+      <div class="prof-username" id="profile-email-label">—</div>
+    </div>
+
+    <!-- Действия для чужого профиля -->
+    <div class="prof-actions" id="prof-other-actions" style="display:none">
+      <button class="prof-action-btn primary" id="prof-btn-dm">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M1 8V3a2 2 0 012-2h8a2 2 0 012 2v5a2 2 0 01-2 2H9l-3 2v-2H3a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Написать
+      </button>
+      <button class="prof-action-btn ghost" id="prof-btn-mention">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9 7a2 2 0 11-4 0 2 2 0 014 0z" stroke="currentColor" stroke-width="1.2"/><path d="M11 7a4 4 0 10-1.5 3.1M11 7v2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Упомянуть
+      </button>
+    </div>
+
+    <!-- Карточки -->
+    <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px">
+
+      <!-- Статы -->
+      <div class="prof-card">
+        <div class="prof-stats">
+          <div class="prof-stat">
+            <div class="prof-stat-num" id="stat-msgs">—</div>
+            <div class="prof-stat-label">Сообщений</div>
+          </div>
+          <div class="prof-stat">
+            <div class="prof-stat-num" id="stat-joined">—</div>
+            <div class="prof-stat-label">С нами</div>
+          </div>
+          <div class="prof-stat">
+            <div class="prof-stat-num" id="stat-channels">—</div>
+            <div class="prof-stat-label">Каналов</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- О себе -->
+      <div class="prof-card">
+        <div class="prof-card-section">
+          <div class="prof-section-title">О себе</div>
+          <div class="prof-bio empty" id="prof-bio-view">Нет информации</div>
+        </div>
+      </div>
+
+      <!-- Статус (только свой) -->
+      <div class="prof-card" id="profile-status-row">
+        <div class="prof-card-section">
+          <div class="prof-section-title">Статус</div>
+          <div class="prof-status-btns">
+            <button class="prof-status-btn online"  data-s="online"><span class="prof-sdot"></span>В сети</button>
+            <button class="prof-status-btn away"    data-s="away"><span class="prof-sdot"></span>Отошёл</button>
+            <button class="prof-status-btn offline" data-s="offline"><span class="prof-sdot"></span>Не беспокоить</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Редактирование (только свой) -->
+      <div class="prof-card" id="profile-edit-section">
+        <div class="prof-card-section">
+          <div class="prof-section-title">Редактировать профиль</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="prof-field">
+              <label>Отображаемое имя</label>
+              <input id="profile-name-input" placeholder="Ваше имя" autocomplete="off"/>
+            </div>
+            <div class="prof-field">
+              <label>О себе</label>
+              <textarea id="profile-bio-input" placeholder="Расскажите о себе…" rows="3"></textarea>
+            </div>
+            <div class="prof-field">
+              <label>Аватар (URL изображения)</label>
+              <input id="profile-avatar-url" placeholder="https://…" type="url"/>
+              <div class="prof-av-preview-row" id="prof-av-preview-row">
+                <img class="prof-av-preview-img" id="prof-av-preview" src="" alt=""/>
+                <span class="prof-av-preview-label">Предпросмотр</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="prof-foot" id="profile-foot">
+      <button class="btn btn-ghost" id="btn-logout" style="margin-right:auto;color:var(--muted);font-size:.72rem" title="Выйти из аккаунта">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="margin-right:5px"><path d="M9.5 4.5L12 7l-2.5 2.5M12 7H5.5M7 2H3a1 1 0 00-1 1v8a1 1 0 001 1h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Выйти
+      </button>
+      <button class="btn btn-ghost" id="prof-sh-cancel">Отмена</button>
+      <button class="btn btn-primary" id="btn-save-profile">Сохранить</button>
+    </div>
+  `;
+
+  // Profile triggers
   $('btn-my-profile')?.addEventListener('click',openMyProfile);
   $('my-avatar')?.addEventListener('click',openMyProfile);
   $('mob-btn-profile').addEventListener('click',openMyProfile);
-  $('btn-save-profile').addEventListener('click',saveProfile);
+  // Sheet controls (элементы находятся внутри sheet-body, уже в DOM)
+  $('prof-sh-cancel').addEventListener('click', () => Sheet.close('profile'));
+  $('btn-save-profile').addEventListener('click', saveProfile);
   // Статус-кнопки в профиле
   document.querySelectorAll('.prof-status-btn').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('.prof-status-btn').forEach(x=>x.classList.remove('active'));
