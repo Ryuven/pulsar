@@ -34,7 +34,7 @@ const _BASE_CSS = `
 /* Затемнение */
 .bs-ov {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,.6);
+  background: rgba(0,0,0,.45);
   opacity: 0; pointer-events: none;
   transition: opacity .28s;
   backdrop-filter: blur(4px);
@@ -46,14 +46,15 @@ const _BASE_CSS = `
 .bs-box {
   position: fixed; left: 0; right: 0; bottom: 0;
   height: 100svh;
-  background: var(--surface, #0e0e16);
-  border-top: 1px solid var(--border, rgba(255,255,255,.065));
+  background: var(--surface, #ffffff);
+  border-top: 1px solid var(--border, rgba(0,0,0,.07));
   border-radius: 22px 22px 0 0;
   transform: translateY(100%);
   transition: transform .38s cubic-bezier(.32,0,.18,1);
   display: flex; flex-direction: column;
   overflow: hidden;
   will-change: transform;
+  box-shadow: 0 -4px 32px rgba(0,0,0,.08);
 }
 .bs-box.open { transform: translateY(0); }
 
@@ -61,7 +62,7 @@ const _BASE_CSS = `
 .bs-drag {
   width: 36px; height: 4px;
   border-radius: 99px;
-  background: rgba(255,255,255,.13);
+  background: var(--border, rgba(0,0,0,.12));
   margin: 10px auto 0;
   flex-shrink: 0;
   cursor: grab;
@@ -72,30 +73,30 @@ const _BASE_CSS = `
 .bs-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 18px 14px;
-  border-bottom: 1px solid var(--border, rgba(255,255,255,.065));
+  border-bottom: 1px solid var(--border, rgba(0,0,0,.07));
   flex-shrink: 0;
 }
 .bs-head-title {
-  font-family: var(--font-display, 'Syne', sans-serif);
+  font-family: var(--font-display, 'Unbounded', sans-serif);
   font-weight: 800; font-size: 1rem;
-  color: var(--text, #e8e8f4);
+  color: var(--text, #171f1a);
 }
 
 /* Кнопка закрытия */
 .bs-close {
-  background: var(--surface-3, #191926);
+  background: var(--surface-2, #edf4ef);
   border: none;
   width: 32px; height: 32px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  color: var(--muted, #8888a0);
+  color: var(--muted, #5a7a62);
   flex-shrink: 0;
   transition: background .13s, color .13s;
 }
 .bs-close:hover {
-  background: var(--surface-4, #1e1e2e);
-  color: var(--text, #e8e8f4);
+  background: var(--surface-3, #e0ede3);
+  color: var(--text, #171f1a);
 }
 
 /* Тело — сюда идёт весь уникальный контент */
